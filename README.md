@@ -6,3 +6,5 @@
 # GFN-PG
 Code for the ICML 2024 paper 'GFlowNet Training by Policy Gradient'
 
+Link for sEH dataset: https://drive.google.com/file/d/1_dAXZqV_ZcVIYMGCVAqK2O4jIffoSzyL/view?usp=sharing
+
