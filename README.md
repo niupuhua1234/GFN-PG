@@ -15,6 +15,8 @@ The code is adapted from [*torchgfn*](https://pypi.org/project/torchgfn/0.1.3/) 
 
 If you find our code useful, please considering citing our paper in your publications. We provide a BibTeX entry below.
 
+
+```bibtex
 @InProceedings{pmlr-v235-niu24c,
   title = 	 {{GF}low{N}et Training by Policy Gradients},
   author =       {Niu, Puhua and Wu, Shili and Fan, Mingzhou and Qian, Xiaoning},
