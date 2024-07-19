@@ -4,7 +4,7 @@
 </div> -->
 --------------------------------------------------------------------------------
 # GFN-PG
-Code for the ICML 2024 paper 'GFlowNet Training by Policy Gradients'
+Code for the ICML 2024 paper '[GFlowNet Training by Policy Gradients](https://proceedings.mlr.press/v235/niu24c.html)'
 
 [Clik here for downloading sEH dataset](https://drive.google.com/file/d/1_dAXZqV_ZcVIYMGCVAqK2O4jIffoSzyL/view?usp=sharing)
 
