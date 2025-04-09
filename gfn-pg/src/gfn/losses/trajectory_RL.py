@@ -257,7 +257,7 @@ class TrajectoryRL(TrajectoryDecomposableLoss):
                 masks[i]]  #T-step estimation  or + Vt_prev[masks[i]] one-step estimation
             tar[i][masks[i]] = tar_prev[masks[i]]
             #########################################
-            deltas[masks[i]] = scores[i][masks[i]] +  Vt_prev[masks[i]] - values[i][masks[i]] #if lamb!=1 else scores[i][masks[i]]# Qt-Vt(\eta)
+            deltas[masks[i]] = scores[i][masks[i]] +  Vt_prev[masks[i]] - values[i][masks[i]] #if lamb!=1 else scores[i][masks[i]]
             if torch.any(torch.isnan(deltas)): raise ValueError("NaN in scores")
             Vt_prev = values[i]
             adv_prev[masks[i]]= deltas[masks[i]] + lamb * adv_prev[masks[i]]
