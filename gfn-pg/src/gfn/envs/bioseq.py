@@ -22,37 +22,6 @@ ForwardMasksTensor = TensorType["batch_shape", "n_actions", torch.bool]
 BackwardMasksTensor = TensorType["batch_shape", "n_actions - 1", torch.bool]
 from src.gfn.envs.bitseq import Replay_X,Replay_x,dec2bin,nbase2dec
 
-# class PG_X:
-#     def __init__(self,env:BitSeqEnv,inf_value=-1e5):
-#         self.env=env
-#         self.is_in = vmap(lambda x,idx,y: torch.abs(idx*(x-y)).sum(-1) == 0 ,in_dims=(0,0,None))
-#         self.inf_value=torch.tensor(inf_value)
-#         self.log_pgs=torch.zeros(size=self.env.all_states.forward_masks.shape)
-#
-#     def is_in_replay(self,states:States):
-#         valid_masks= states.states_tensor!=-1
-#         state_index=self.is_in(states.states_tensor,valid_masks,self.env.oracle.O_x)
-#         return state_index
-#
-#     def mean_reward(self,states:States):
-#         valid_index=~states.is_sink_state
-#         mean_reward =torch.zeros(states.batch_shape,dtype=torch.float)
-#         state_index=self.is_in_replay(states[valid_index])
-#         mean_reward[valid_index]=torch.stack([torch.mean(self.env.oracle.O_y[idx]) for idx in state_index ])
-#         return mean_reward
-#
-#     def __call__(self):
-#         ordered_states_list = self.env.ordered_states_list
-#         for order_idx, ordered_states in enumerate(ordered_states_list):  # filter out sf induced by terminating actions
-#             print('order:',order_idx)
-#             log_pgs = torch.zeros(size=ordered_states.forward_masks.shape)
-#             for i,state in enumerate(ordered_states):
-#                 print(i)
-#                 next_states_all = self.env.all_step(state)
-#                 scores           = self.mean_reward(next_states_all)
-#                 log_pgs[i]         = (scores/scores.sum()).log().maximum(self.inf_value)
-#             self.log_pgs[self.env.get_states_indices(ordered_states)]=log_pgs
-
 class Oracle(ABC):
     def __init__(self, nbase,ndim,oracle_path,mode_path=None,reward_exp=3,reward_max=10.0,reward_min=1e-3,name="TFbind8"):
         super().__init__()
