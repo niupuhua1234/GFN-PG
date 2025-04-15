@@ -60,20 +60,20 @@ class Replay_X:
                                self.terminating_states[valid_index])).sum(-1)
         return state_index==0
 
-    # def scores(self,state:States,nstate:States,valid_index):
-    #     valid_index= torch.full_like(self.terminating_rewards, fill_value=True,dtype=torch.bool) \
-    #         if valid_index is None else valid_index
-    #     new_index=valid_index.clone()
-    #     ##############################
-    #     state_index=self.is_in_replay(state,valid_index)
-    #     new_index[valid_index]=state_index
-    #     nstate_index=self.is_in_replay(nstate,new_index)
-    #     ##############################
-    #     scores_Z=self.terminating_rewards[valid_index][state_index].sum() \
-    #         if torch.any( state_index) else torch.tensor(1.)
-    #     scores=self.terminating_rewards[new_index][nstate_index].sum() \
-    #         if torch.any( nstate_index) else torch.tensor(0.)
-    #     return scores,scores_Z,new_index
+    def scores_approx(self,state:States,nstate:States,valid_index):
+        valid_index= torch.full_like(self.terminating_rewards, fill_value=True,dtype=torch.bool) \
+            if valid_index is None else valid_index
+        new_index=valid_index.clone()
+        ##############################
+        state_index=self.is_in_replay(state,valid_index)
+        new_index[valid_index]=state_index
+        nstate_index=self.is_in_replay(nstate,new_index)
+        ##############################
+        scores_Z=self.terminating_rewards[valid_index][state_index].sum() \
+            if torch.any( state_index) else torch.tensor(1.)
+        scores=self.terminating_rewards[new_index][nstate_index].sum() \
+            if torch.any( nstate_index) else torch.tensor(0.)
+        return scores,scores_Z,new_index
 
     def scores(self,state:States,nstate:States,state_list,valid_index):
         valid_index= torch.full_like(self.terminating_rewards, fill_value=True,dtype=torch.bool) \
