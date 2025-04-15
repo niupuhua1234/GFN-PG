@@ -87,7 +87,7 @@ class TrajectoryRL(TrajectoryDecomposableLoss):
     def BitSeqEnv(self,trajectories:Trajectories):
         return NotImplementedError("The environment does not support guided distribution")
 
-    def BioSeqEnv_approx(self,trajectories:Trajectories): # for bit-sequence
+    def BioSeqEnv_approx(self,trajectories:Trajectories):
         if hasattr(self.env,'replay_X'):
             backward=trajectories.is_backward
             self.env.replay_X.add(trajectories.states[0] if backward else trajectories.last_states,
@@ -110,7 +110,7 @@ class TrajectoryRL(TrajectoryDecomposableLoss):
             log_pg_traj=trajectories.log_probs
         return log_pg_traj
 
-    def BioSeqEnv(self,trajectories:Trajectories): # for bit-sequence
+    def BioSeqEnv(self,trajectories:Trajectories):
         if hasattr(self.env,'replay_X'):
             backward=trajectories.is_backward
             last_states=trajectories.states[0] if backward else trajectories.last_states
