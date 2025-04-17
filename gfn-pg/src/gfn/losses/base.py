@@ -141,8 +141,7 @@ class TrajectoryDecomposableLoss(Sub_TrajectoryDecomposableLoss,ABC):
         else:
             valid_index = ~trajectories.is_sink_action
             valid_states= trajectories.states[1:][valid_index]    #sT<-s0: [1:] states traj is one bigger than actions traj by an s_T in  backward samples
-            valid_actions=trajectories.env.bction2action(trajectories.states[:-1][valid_index],  #[1:-1]?
-                                                         trajectories.actions[valid_index])
+            valid_actions=trajectories.env.bction2action(trajectories.states[:-1][valid_index], trajectories.actions[valid_index])
         if valid_states.batch_shape != tuple(valid_actions.shape):
             raise AssertionError("Something wrong happening with log_pf evaluations")
         return valid_states,valid_actions,valid_index
