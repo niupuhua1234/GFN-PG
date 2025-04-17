@@ -99,8 +99,8 @@ class BioSeqEnv(BitSeqEnv,Env):
         else:
             raise ValueError(f"Unknown preprocessor {preprocessor_name}")
 
-        self.replay_X=Replay_X(ndim=ndim)
-        self.replay_x=Replay_x(nbase=nbase,ndim=ndim)
+        self.replay_G=Replay_G(nbase=nbase,ndim=ndim)
+        self.replay_x = Replay_x(nbase=nbase, ndim=ndim)
         Env.__init__(self,action_space=action_space,s0=s0, sf=sf,
                      device_str=device_str,preprocessor=preprocessor)
 
