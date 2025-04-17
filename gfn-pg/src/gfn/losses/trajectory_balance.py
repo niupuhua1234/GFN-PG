@@ -39,15 +39,10 @@ class TrajectoryBalance(TrajectoryDecomposableLoss):
             on_policy (bool, optional): If True, the log probs stored in the trajectories are used. Defaults to False.
 
         Forward     P(·|s0)→  ...  →P(sT|sn-1) → P(sf|sT)
+                                                     =1  for graded DAG
         -------------------------------------------------
         Backward    P(s0|s1)←  ... ←P(sn-1|sT) ← P(sT|sf)
                       =1                           R(sT)/Z
-        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        Forward     P(·|s0)→  ...  →P(sT|sn-1) → P(sf|sT)                if  not all states are terminatiing states
-                                                    =1
-        -------------------------------------------------
-        Backward    P(s0|s1)←   ...←P(sn-1|sT) ←P(sT|sf)
-                      =1                          R(sT)/Z
         """
         super().__init__(parametrization)
         self.log_reward_clip_min = log_reward_clip_min
