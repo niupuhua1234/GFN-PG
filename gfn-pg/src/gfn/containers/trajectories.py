@@ -29,7 +29,8 @@ class Trajectories(Container):
                  is_backward:  bool = False,
                  log_probs: FloatTensor2D | None = None,
                  ) -> None:
-        """Container for complete trajectories (starting in s_0 and ending in s_f).
+        """
+        Container for complete trajectories (starting in s_0 and ending in s_f).
         `Trajectories` are represented via a `States` object where ``states.tensor`` is of bi-dimensional batch shape.
         The first dimension represents the time step [0,T], the second dimension represents the trajectory index [0,N-1].
         T+2 is the true trajectory length  (+1 for sf)
