@@ -20,7 +20,7 @@ BatchTensor = TensorType["batch_shape"]
 EnergyTensor = TensorType["state_shape", "state_shape", torch.float]
 ForwardMasksTensor = TensorType["batch_shape", "n_actions", torch.bool]
 BackwardMasksTensor = TensorType["batch_shape", "n_actions - 1", torch.bool]
-from src.gfn.envs.bitseq import Replay_X,Replay_x,dec2bin,nbase2dec
+from src.gfn.envs.bitseq import Replay_G,Replay_x,dec2bin,nbase2dec
 
 class Oracle(ABC):
     def __init__(self, nbase,ndim,oracle_path,mode_path=None,reward_exp=3,reward_max=10.0,reward_min=1e-3,name="TFbind8"):
