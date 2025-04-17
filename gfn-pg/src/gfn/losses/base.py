@@ -178,7 +178,11 @@ class TrajectoryDecomposableLoss(Sub_TrajectoryDecomposableLoss,ABC):
              trajectories: trajectories
              log_p_trajectories: log probabilities of each transition in each trajectory
         Return:
-            cumulative sum of log probabilities of each trajectory
+            cumulative max_length+1 sums of log probabilities of each trajectory.
+            
+            logp(s0)+Σ  log π(s_t+1|st)  [ 0,     ,  Σ(0:1)              , ....,  Σ(0:3)      ,....., Σ(0:max.length)   ].
+                                           logp(s0), logp(τ_{0:1|s_0)p(s0),....., logp(τ_{0:3}),....., logp(τ_{0:max.length)
+        
         """
         return torch.cat((torch.zeros(1, trajectories.n_trajectories, device=log_p_trajectories.device),
                           log_p_trajectories.cumsum(dim=0),),dim=0)
