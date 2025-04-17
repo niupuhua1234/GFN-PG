@@ -90,7 +90,7 @@ class TrajectoryRL(TrajectoryDecomposableLoss):
     def BioSeqEnv_approx(self,trajectories:Trajectories):
         if hasattr(self.env,'replay_G'):
             backward=trajectories.is_backward
-            self.env.replay_X.add(trajectories.states[0] if backward else trajectories.last_states,
+            self.env.replay_G.add(trajectories.states[0] if backward else trajectories.last_states,
                                   trajectories.log_rewards.exp() )
             log_pg_traj=trajectories.log_probs
             valid_traj=trajectories.states[1:] if  backward else trajectories.states[:-1] # backward s_{T-1}....s_0,    forward s_0->...s_{T-1}->x
@@ -103,7 +103,7 @@ class TrajectoryRL(TrajectoryDecomposableLoss):
                     if trajectories.actions[order,batch]!=-1:
                         state= valid_traj[order,batch]
                         nstate= valid_trajn[order,batch]
-                        scores,scores_Z,valid_order_index = self.env.replay_X.scores_approx(state,nstate,valid_order_index)
+                        scores,scores_Z,valid_order_index = self.env.replay_G.scores_approx(state,nstate,valid_order_index)
                         if scores > 0:
                             log_pg_traj[order,batch]=(scores/scores_Z).log().maximum(torch.tensor(self.inf_value))
         else:
@@ -114,7 +114,7 @@ class TrajectoryRL(TrajectoryDecomposableLoss):
         if hasattr(self.env,'replay_G'):
             backward=trajectories.is_backward
             last_states=trajectories.states[0] if backward else trajectories.last_states
-            self.env.replay_X.add( last_states,trajectories.log_rewards.exp() )
+            self.env.replay_G.add( last_states,trajectories.log_rewards.exp() )
             log_pg_traj=trajectories.log_probs
             valid_traj=trajectories.states[1:] if  backward else trajectories.states[:-1] # backward s_{T-1}....s_0,    forward s_0->...s_{T-1}->x
             orders=list(reversed(range(valid_traj.batch_shape[0]))) if  backward else list(range(valid_traj.batch_shape[0]))
@@ -129,7 +129,7 @@ class TrajectoryRL(TrajectoryDecomposableLoss):
                         state  = valid_traj[order, batch]
                         nstate = trajectories.env.all_step(state)
                         nstate_list=actions_list & state.forward_masks
-                        scores,valid_order_index = self.env.replay_X.scores(state,nstate,nstate_list,valid_order_index)
+                        scores,valid_order_index = self.env.replay_G.scores(state,nstate,nstate_list,valid_order_index)
                         if scores.sum() > 0:
                             log_pg_traj[order,batch]=(scores[actions]/scores.sum()).log().maximum(torch.tensor(self.inf_value))
         else:
