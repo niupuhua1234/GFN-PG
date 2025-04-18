@@ -44,7 +44,7 @@ class Trajectories(Container):
         and the second dimension representing the trajectory index.
 
         e.g.
-                                                    Forward trajectory with true_length T+2( +1 for sf), and length=T+1
+        Forward trajectory of length=T+1. It contains T+2 states ( +1 for sf), and T+1 transitions.   
                                                     s_0->s1->......s_T ->sf.
                                                     a_0->a1->......a_T.
 
