@@ -181,10 +181,10 @@ class TrajectoryDecomposableLoss(Sub_TrajectoryDecomposableLoss,ABC):
             cumulative max_length+1 sums of log probabilities of each trajectory.
             
         e.g. forward prob of forward traj:
-            Σ  log π|st  [ 0,        Σ(0:1)         ,....., Σ(0:3)       ,....., Σ(0:T) ,       Σ(0:T+1)   ].
-                           0, logp(τ_{0:1}|s_0),....., logp(τ_{0:3}|0),....., logp(τ_{0:T}|0),logp(τ_{0:T+1}|0)
+            Σ  log π|st  [ 0,        Σ(0:1)         ,....., Σ(0:3)     ,....., Σ(0:T) ,       Σ(0:f)   ].
+                           0, logp(τ_{0:1}|s_0),....., logp(τ_{0:3}|0) ,....., logp(τ_{0:T}|0),logp(τ_{0:f}|0)
             backward prob of forward traj:
-            Σ  log π|st  [ 0,       Σ(0:1)     , ....,  Σ(0:3)      ,....., Σ(0:T),             ____________].
+            Σ  log π|st  [ 0,       Σ(0:1)     , ....,  Σ(0:3)         ,....., Σ(0:T),         ____________].
                            0,  logp(τ_{0:1}|s_1),....., logp(τ_{0:3}|3),....., logp(τ_{0:T}|T), _____________
         
         """
