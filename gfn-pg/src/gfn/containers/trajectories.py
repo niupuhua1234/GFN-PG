@@ -32,7 +32,7 @@ class Trajectories(Container):
         """
         Container for complete trajectories (starting in s_0 and ending in s_f).
         `Trajectories` are represented via a `States` object where ``states.tensor`` is of bi-dimensional batch shape.
-        The first dimension represents the time step [0,T], the second dimension represents the trajectory index [0,N-1].
+        The first dimension represents the time step [0,T+1], the second dimension represents the trajectory index [0,N-1].
         T+2 is the true trajectory length  (+1 for sf)
         
         Because different trajectories may have different lengths, shorter trajectories are padded with
@@ -47,10 +47,10 @@ class Trajectories(Container):
         Args:
             env (Env): The environment in which the trajectories are defined.
             states (States, optional)            : The states of the trajectories                             Defaults to None
-                                                  Its length is 1 bigger than actions for s_f forward or s_0 backward .
+                                                   Its length is 1 bigger than actions for s_f forward or s_0 backward .
             actions (Tensor2D, optional)         : The actions of the trajectories                            Defaults to None.
-            when_is_done (Tensor1D, optional)    : The time step at which each trajectory ends. ∈[1,T+1]
-                                                   =the number of actions                                     Defaults to None.
+            when_is_done (Tensor1D, optional)    : The time step at which each trajectory ends. ∈[1,T+1]     Defaults to None.
+                                                   T+1 is length of trajectories without sf
             is_backward (bool, optional)         : Whether the trajectories are backward or forward.          Defaults to False.
             log_probs (FloatTensor2D, optional)  : The log probabilities of the trajectories' actions. Defaults to None.
 
