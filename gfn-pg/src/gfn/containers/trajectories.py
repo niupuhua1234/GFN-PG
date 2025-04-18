@@ -33,7 +33,6 @@ class Trajectories(Container):
         Container for complete trajectories (starting in s_0 and ending in s_f).
         `Trajectories` are represented via a `States` object where ``states.tensor`` is of bi-dimensional batch shape.
         The first dimension represents the time step [0,T+1], the second dimension represents the trajectory index [0,N-1].
-        T+2 is the true trajectory length  (+1 for sf)
         
         Because different trajectories may have different lengths, shorter trajectories are padded with
         the tensor representation of the terminal state (s_f or s_0 depending on the direction of the trajectory), and
@@ -44,24 +43,24 @@ class Trajectories(Container):
         The actions are represented as a `two-dimensional` tensor with the first dimension representing the time step [0,T]
         and the second dimension representing the trajectory index.
 
+        e.g.
+                                                    Forward trajectory with true_length T+2( +1 for sf), and length=T+1
+                                                    s_0->s1->......s_T ->sf.
+                                                    a_0->a1->......a_T.
+
         Args:
             env (Env): The environment in which the trajectories are defined.
             states (States, optional)            : The states of the trajectories                             Defaults to None
                                                    Its length is 1 bigger than actions for s_f forward or s_0 backward .
             actions (Tensor2D, optional)         : The actions of the trajectories                            Defaults to None.
             when_is_done (Tensor1D, optional)    : The time step at which each trajectory ends. ∈[1,T+1]     Defaults to None.
-                                                   T+1 is length of trajectories without sf
             is_backward (bool, optional)         : Whether the trajectories are backward or forward.          Defaults to False.
             log_probs (FloatTensor2D, optional)  : The log probabilities of the trajectories' actions. Defaults to None.
+            max_length                           : the maximum length of trajectories without sf.
 
         Returns:
             log_rewards (FloatTensor1D): The log_rewards of the trajectories, (Rewards of the  states before sink states).
              ``env.log_reward`` is used to compute the rewards,at each call of ``self.log_rewards``
-
-
-                                                    Forward trajectory
-                                                    s_0->s1->......s_T ->sf.
-                                                    a_0->a1->......a_T.
         """
         self.env = env
         self.is_backward = is_backward
