@@ -57,7 +57,7 @@ class SubTrajectoryBalance(TrajectoryDecomposableLoss):
 
     def get_scores(
         self, trajectories: Trajectories
-    ) -> Tuple[ScoresTensor,List[ScoresTensor], List[ScoresTensor]]:
+    ) -> Tuple[LogPTrajectoriesTensor,List[ScoresTensor], List[ScoresTensor]]:
         """
         Returns two elements:
         - A list of tensors, each of which representing the scores of all sub-trajectories of length k, for k in [1, ..., trajectories.max_length].
