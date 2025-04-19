@@ -48,7 +48,7 @@ class TrajectoryBalance(TrajectoryDecomposableLoss):
         self.log_reward_clip_min = log_reward_clip_min
         self.optimizer=optimizer
 
-    def get_scores(self, trajectories: Trajectories) -> Tuple[ScoresTensor,ScoresTensor,ScoresTensor]:
+    def get_scores(self, trajectories: Trajectories) -> Tuple[LogPTrajectoriesTensor,LogPTrajectoriesTensor,LogPTrajectoriesTensor]:
 
         log_pf_trajectories = self.get_pfs(trajectories)
         log_pb_trajectories = self.get_pbs(trajectories)
