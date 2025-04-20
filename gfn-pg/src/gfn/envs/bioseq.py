@@ -38,7 +38,7 @@ class Oracle(ABC):
 
         oracle_data['y'] =oracle_data['y']**reward_exp  # milden sharpness
         oracle_data['y']=oracle_data['y']* reward_max/oracle_data['y'].max() # scale up
-        #oracle_data['y']=torch.maximum(oracle_data['y'],torch.tensor(reward_min)) # scale down  for tf8
+
         self.O_y = oracle_data['y'].squeeze()
         self.O_x =oracle_data['x']
         self.nbase=nbase
