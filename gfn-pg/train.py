@@ -81,12 +81,8 @@ for i in trange(args.n_iterations):
     training_samples = trajectories_to_training_samples(trajectories, loss_fn)
     training_last_states=training_samples.last_states
     states_visited += len(trajectories)
-    if args.Loss=='TTB':
-        temperature=1+(temperature-1)*0.99
-        trajectories_sampler.actions_sampler.temperature=temperature
-    else:
-        epsilon = args.epsilon_end + (epsilon - args.epsilon_end) * args.epsilon_decay
-        trajectories_sampler.actions_sampler.epsilon = epsilon
+    epsilon = args.epsilon_end + (epsilon - args.epsilon_end) * args.epsilon_decay
+    trajectories_sampler.actions_sampler.epsilon = epsilon
 
     training_samples.to_device(args.device_str)
     loss=loss_fn.update_model(training_samples)
