@@ -28,7 +28,7 @@ optimization.add_argument("--epsilon_start",type=float,default=0.0)
 optimization.add_argument("--epsilon_end",type=float,default=0.0)
 # Optimization
 optimization = parser.add_argument_group('Optimization')
-optimization.add_argument('--Loss',default='RL', choices=['DB','TB','RL','TRPO','Sub_TB','TTB'])
+optimization.add_argument('--Loss',default='RL', choices=['DB','TB','RL','TRPO','Sub_TB'])
 optimization.add_argument("--seed", type=int, default=0)
 optimization.add_argument("--optim",default={'lr':0.001,'lr_Z':0.1,'lr_V':0.005})
 optimization.add_argument("--GFNModuleConfig",default={'module_name': "NeuralNet",
