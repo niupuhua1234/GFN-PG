@@ -58,9 +58,10 @@ class TrajectoryBalance(TrajectoryDecomposableLoss):
         pred[0,:] +=self.parametrization.logZ.tensor
         target=log_pb_trajectories
         target.T[terminal_index.T]+=trajectories.log_rewards.clamp_min(self.log_reward_clip_min)
+        scores= (pred-target).sum(0)
         return (log_pf_trajectories,
                 log_pb_trajectories,
-                pred-target,)
+                scores,)
 
     def update_model(self,trajectories: Trajectories):
         loss=self.__call__(trajectories)
@@ -70,8 +71,8 @@ class TrajectoryBalance(TrajectoryDecomposableLoss):
         return loss
 
     def __call__(self, trajectories: Trajectories) -> LossTensor:
-        _, _,score= self.get_scores(trajectories)
-        loss=score.sum(0).pow(2).mean()
+        _, _,scores= self.get_scores(trajectories)
+        loss=scores.pow(2).mean()
         if torch.isnan(loss).any():raise ValueError("loss is nan")
         return loss
 
