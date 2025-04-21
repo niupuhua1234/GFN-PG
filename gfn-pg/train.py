@@ -11,7 +11,7 @@ from simple_parsing.helpers.serialization import encode
 from tqdm import tqdm, trange
 timestamp = datetime.now().strftime('-%Y%m%d_%H%M%S')
 parser = ArgumentParser(description='DAG-GFlowNet')
-parser.add_argument('--project', default='Hypergrid_RL_128_new')
+parser.add_argument('--project', default='Hypergrid_RL_256_new')
 # Environment
 environment = parser.add_argument_group('Environment')
 environment.add_argument('--Env',default='HyperGrid', choices=['HyperGrid','DiscreteEBM','BayesianNetwork','TFbind8','qm9str','TFbind10','sehstr'])
