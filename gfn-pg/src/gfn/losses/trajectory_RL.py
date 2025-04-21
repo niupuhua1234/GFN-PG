@@ -238,13 +238,15 @@ class TrajectoryRL(TrajectoryDecomposableLoss):
         p_log_p = -(log_pf * log_pf.exp()).sum(-1)
         return p_log_p
 
-    def estimate_advantages(self,trajectories:Trajectories,scores,values,unbias=False):
+    
+    def estimate_advantages(self,trajectories:Trajectories,scores,Vt,unbias=False,unbias_V=True):
         """
         Returns:
-            -tar: estimated :math:`\hat{V}t` for the optimzation of  :math:`V(\eta)` advantages
-            -advantages:  estimated advantage function
+            -tar: lamb-biased estimated :math:`\hat{V}t` for the optimzation of  :math:`V(\eta)` advantages
+            -advantages:  lamb-biased estimated advantage function
         """
         lamb = 1. if unbias else self.lamb
+        lamb_V=1. if unbias_V else self.lamb
         masks = ~trajectories.is_sink_action
         Vt_prev = torch.zeros_like(scores[0], dtype=torch.float)
         adv_prev = torch.zeros_like(scores[0], dtype=torch.float)
@@ -253,15 +255,18 @@ class TrajectoryRL(TrajectoryDecomposableLoss):
         tar = torch.full_like(scores, fill_value=0., dtype=torch.float)
         advantages = torch.full_like(scores, fill_value=0., dtype=torch.float)
         for i in reversed(range(scores.size(0))):
-            tar_prev[masks[i]] = scores[i][masks[i]] + tar_prev[
-                masks[i]]  #T-step estimation  or + Vt_prev[masks[i]] one-step estimation
-            tar[i][masks[i]] = tar_prev[masks[i]]
-            #########################################
-            deltas[masks[i]] = scores[i][masks[i]] +  Vt_prev[masks[i]] - values[i][masks[i]] #if lamb!=1 else scores[i][masks[i]]
+            deltas[masks[i]] = scores[i][masks[i]] +  Vt_prev[masks[i]] - Vt[i][masks[i]]
             if torch.any(torch.isnan(deltas)): raise ValueError("NaN in scores")
-            Vt_prev = values[i]
-            adv_prev[masks[i]]= deltas[masks[i]] + lamb * adv_prev[masks[i]]
+            Vt_prev = Vt[i]
+            ######################################
+            adv_prev[masks[i]] = deltas[masks[i]] + lamb * adv_prev[masks[i]]
             advantages[i][masks[i]]= adv_prev[masks[i]]
+
+            tar_prev[masks[i]] = deltas[masks[i]]  + lamb_V* tar_prev[masks[i]]
+            tar[i][masks[i]]   = tar_prev[masks[i]]+ Vt[i][masks[i]]
+
+            #tar_prev[masks[i]] = scores[i][masks[i]] + tar_prev[masks[i]] # unbias directly
+            #tar[i][masks[i]]   = tar_prev[masks[i]]
+
         advantages[masks] = (advantages[masks] - advantages[masks].mean())
         return advantages, tar
-
