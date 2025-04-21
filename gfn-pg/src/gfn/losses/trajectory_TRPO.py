@@ -67,7 +67,7 @@ class Trajectory_TRPO(TrajectoryRL):
 
         sur_loss=self.surrogate_loss(log_pf,log_pf,advantages[valid_index]).sum(0)/n_traj #
         KL        = self.kl_log_prob(log_pf_all,log_pf_all).sum(0)/n_traj # value is zero, used for Hessian computation at theta_old
-        #method 1
+
         sur_grads = self.flat_grad(sur_loss, params,retain_graph=True)
         kl_grads  = self.flat_grad(KL, params, create_graph=True)       # Create graph, because we will call backward on it (for HVP)
         Hvp       = lambda v:self.flat_grad(kl_grads @ v, params, retain_graph=True)
