@@ -51,7 +51,7 @@ class Trajectory_TRPO(TrajectoryRL):
         return A_loss  # ,Kl.detach()
 
     def trpo_step(self, trajectories, advantages, delta=1e-2):
-        #delta # Should be low (approximately betwween 0.01 and 0.05
+        #delta Should be low (approximately between 0.01 and 0.05)
         n_traj=trajectories.n_trajectories
         backward=trajectories.is_backward
         if not backward:
@@ -92,7 +92,7 @@ class Trajectory_TRPO(TrajectoryRL):
                 KL_new = self.kl_log_prob(log_pf_all, log_pf_all_new).mean()
                 if actual_improve<0 and KL_new <= delta:
                     return True
-                # decereing objective so imporve should be negative
+                # deceasing objective so improvement should be negative
             return False
         line_search(-max_step,flatten_params,sur_loss)
         return sur_loss
@@ -122,8 +122,8 @@ class Trajectory_TRPO(TrajectoryRL):
     def flatten(xs): return  torch.cat([x.view(-1) for x in xs])
     @staticmethod
     def flat_grad(y, x, retain_graph=False, create_graph=False,flat=True):
-        # create_graph:created graph of the grad result for higher order gradient compuation
-        # retain_graph: retain current gradient graph after execuation for other gradient compuation later.
+        # create_graph:created graph of the grad result for higher order gradient computation
+        # retain_graph: retain current gradient graph after execution for other gradient computation later.
         if create_graph:  retain_graph = True
         g = torch.autograd.grad(y, x, retain_graph=retain_graph, create_graph=create_graph)
         return torch.cat([gg.view(-1) for gg in g]) if flat else g
