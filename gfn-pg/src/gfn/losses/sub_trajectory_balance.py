@@ -121,7 +121,7 @@ class SubTrajectoryBalance(TrajectoryDecomposableLoss):
     def __call__(self, trajectories: Trajectories) -> LossTensor:
         log_pf_trajectories,scores,flattening_masks= self.get_scores(trajectories)
         flattening_mask = torch.cat(flattening_masks)
-        all_scores = torch.cat(scores, 0)     # scores[i] : sub_traj with max_length i in  all_batch
+        all_scores = torch.cat(scores, 0)     # scores[i] : scores of sub_traj with max_length i in  all_batch
 
         # all_scores is a tensor of shape (max_length * (max_length + 1) / 2, n_trajectories)
         n_rows = int(trajectories.max_length * (1 + trajectories.max_length) / 2)
