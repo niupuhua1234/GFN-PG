@@ -3,9 +3,7 @@ import copy
 import torch
 from torchtyping import TensorType
 from src.gfn.containers import Trajectories,States
-from src.gfn.losses import TrajectoryRL,RLParametrization
-from src.gfn.estimators import LogStateFlowEstimator
-from functorch import vmap, jacrev, make_functional
+from src.gfn.losses import TrajectoryRL
 # Typing
 ScoresTensor = TensorType[-1, float]
 LossTensor = TensorType[0, float]
