@@ -159,11 +159,11 @@ class TrajectoryDecomposableLoss(Sub_TrajectoryDecomposableLoss,ABC):
         """
         if not (trajectories.is_backward):
             inter_index=~trajectories.is_sink_action & ~trajectories.is_terminating_action # filter padding s_f and s_T
-            non_init_valid_states  =  trajectories.states[1:][inter_index]                 # [1:] filter out s_0 and align with aciton(错一格)
+            non_init_valid_states  =  trajectories.states[1:][inter_index]                 # [1:] filter out s_0 and align with acitons
             non_exit_valid_actions = trajectories.env.action2bction( trajectories.states[:-1][inter_index],
                                                                      trajectories.actions[inter_index])
         else:
-            inter_index = ~trajectories.is_sink_action                     # filtered padding s_f( dummy states after reaching s0)
+            inter_index = ~trajectories.is_sink_action                     # filter padding s_f( dummy states after reaching s0)
             non_init_valid_states = trajectories.states[:-1][inter_index]  #sT->s0 [:-1] states traj is one bigger than actions traj by an s_0
             non_exit_valid_actions = trajectories.actions[inter_index]
         return non_init_valid_states,non_exit_valid_actions,inter_index
