@@ -34,38 +34,6 @@ class GFNModule(ABC):
     def load_state_dict(self, state_dict: dict):
         pass
 
-
-class GcnNet(GFNModule,nn.Module):
-    def __init__(
-        self,
-        edge_dict,
-        input_dim: int,
-        output_dim: int,
-        hidden_dim: Optional[int] = 256,
-        n_hidden_layers: Optional[int] = 3,
-        torso: Optional[nn.Module] = None,
-        is_forward=True,
-    ):
-        super().__init__()
-        self.input_size  =  input_dim
-        self.output_size = output_dim
-        self.register_buffer("edge_dict", edge_dict)
-
-        if torso is None:
-            self.torso = [nn.Linear(input_dim, hidden_dim), activation()]
-            for _ in range(n_hidden_layers - 1):
-                self.torso.append(nn.Linear(hidden_dim, hidden_dim))
-                self.torso.append(activation())
-            self.torso = nn.Sequential(*self.torso)
-        else:
-            self.torso = torso
-
-        self.last_layer = nn.Linear(hidden_dim, output_dim)
-        self.device = None
-
-    def forward(self,x_M):
-        return out,M
-
 class NeuralNet(nn.Module, GFNModule):
     def __init__(
         self,
