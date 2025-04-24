@@ -62,7 +62,7 @@ else:
 if args.Loss not in ['TRPO','RL']:
     name=args.Loss+'-B' if args.PB_parameterized else args.Loss+'-U'
 else:
-    assert args.epsilon_start!=0, 'epsilon_start should be 0.1 for on-policy method!'
+    assert args.epsilon_start==.0, 'epsilon_start should be .0 for on-policy method!'
     if args.Loss in ['TRPO']:
         name= 'RL-T'
     else:
