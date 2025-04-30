@@ -57,7 +57,7 @@ class SubTrajectoryBalance(TrajectoryDecomposableLoss):
 
     def get_scores(
         self, trajectories: Trajectories
-    ) -> Tuple[LogPTrajectoriesTensor,List[ScoresTensor], List[ScoresTensor]]:
+    ) -> Tuple[List[ScoresTensor], List[ScoresTensor]]:
         """
         Returns two elements:
         - A list of tensors, each of which representing the scores of all sub-trajectories of length k, for k in [1, ..., trajectories.max_length].
@@ -109,7 +109,7 @@ class SubTrajectoryBalance(TrajectoryDecomposableLoss):
             flattening_masks.append(flattening_mask)
             scores.append(preds - targets)
 
-        return log_pf_trajectories,scores,flattening_masks
+        return scores,flattening_masks
 
     def update_model(self,trajectories: Trajectories):
         loss=self.__call__(trajectories)
@@ -119,7 +119,7 @@ class SubTrajectoryBalance(TrajectoryDecomposableLoss):
         return loss
 
     def __call__(self, trajectories: Trajectories) -> LossTensor:
-        log_pf_trajectories,scores,flattening_masks= self.get_scores(trajectories)
+        scores,flattening_masks= self.get_scores(trajectories)
         flattening_mask = torch.cat(flattening_masks)
         all_scores = torch.cat(scores, 0)     # scores[i] : scores of sub_traj with max_length i in  all_batch
 
