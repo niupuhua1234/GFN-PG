@@ -48,7 +48,7 @@ class TrajectoryBalance(TrajectoryDecomposableLoss):
         self.log_reward_clip_min = log_reward_clip_min
         self.optimizer=optimizer
 
-    def get_scores(self, trajectories: Trajectories) -> Tuple[LogPTrajectoriesTensor,LogPTrajectoriesTensor,ScoresTensor]:
+    def get_scores(self, trajectories: Trajectories) -> ScoresTensor:
 
         log_pf_trajectories = self.get_pfs(trajectories)
         log_pb_trajectories = self.get_pbs(trajectories)
@@ -59,9 +59,7 @@ class TrajectoryBalance(TrajectoryDecomposableLoss):
         target=log_pb_trajectories
         target.T[terminal_index.T]+=trajectories.log_rewards.clamp_min(self.log_reward_clip_min)
         scores= (pred-target).sum(0)
-        return (log_pf_trajectories,
-                log_pb_trajectories,
-                scores,)
+        return scores
 
     def update_model(self,trajectories: Trajectories):
         loss=self.__call__(trajectories)
@@ -71,7 +69,7 @@ class TrajectoryBalance(TrajectoryDecomposableLoss):
         return loss
 
     def __call__(self, trajectories: Trajectories) -> LossTensor:
-        _, _,scores= self.get_scores(trajectories)
+        scores= self.get_scores(trajectories)
         loss=scores.pow(2).mean()
         if torch.isnan(loss).any():raise ValueError("loss is nan")
         return loss
