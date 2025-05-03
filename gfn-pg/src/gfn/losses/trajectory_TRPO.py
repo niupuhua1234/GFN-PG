@@ -90,7 +90,7 @@ class Trajectory_TRPO(TrajectoryRL):
                 KL_new = self.kl_log_prob(log_pf_all, log_pf_all_new).mean()
                 if actual_improve<0 and KL_new <= delta:
                     return True
-                # deceasing objective so improvement should be negative
+                # decreasing objective so improvement should be negative
             return False
         line_search(-max_step,flatten_params,sur_loss)
         return sur_loss
