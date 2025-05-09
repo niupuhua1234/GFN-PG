@@ -192,6 +192,7 @@ class TrajectoryRL(TrajectoryDecomposableLoss):
         return A_loss + Z_diff
 
     def B_update_model(self, trajectories: Trajectories):
+         "TB based optmiztion for backward trajectory"
         log_pb_traj= self.get_pbs(trajectories)
         if self.PG_used:
             log_pg_traj = self.get_pgs(trajectories)
