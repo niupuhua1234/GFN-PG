@@ -33,7 +33,7 @@ class Trajectory_TRPO(TrajectoryRL):
         return A_loss+Z_diff
 
     def B_trpo_update_model(self, trajectories: Trajectories):
-        #TODO: to be verified
+
         log_pb_trajs = self.get_pbs(trajectories)
         if self.PG_used:
             log_pg_traj= self.get_pgs(trajectories)
