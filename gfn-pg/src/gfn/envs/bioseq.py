@@ -20,7 +20,7 @@ BatchTensor = TensorType["batch_shape"]
 EnergyTensor = TensorType["state_shape", "state_shape", torch.float]
 ForwardMasksTensor = TensorType["batch_shape", "n_actions", torch.bool]
 BackwardMasksTensor = TensorType["batch_shape", "n_actions - 1", torch.bool]
-from src.gfn.envs.bitseq import Replay_G,Replay_x,dec2bin,nbase2dec
+from src.gfn.envs.bitseq import Replay_G,Replay_x,nbase2dec
 
 class Oracle(ABC):
     def __init__(self, nbase,ndim,oracle_path,mode_path=None,reward_exp=3,reward_max=10.0,reward_min=1e-3,name="TFbind8"):
@@ -75,11 +75,11 @@ class BioSeqEnv(BitSeqEnv,Env):
         nbase=4,
         name="TFbind8"
     ):
-        """Discrete EBM environment.
+        """Discrete Sequence environment.
 
         Args:
-            ndim (int, optional): dimension D of the sampling space {0, 1,2,3}^D.
-            energy (EnergyFunction): energy function of the EBM. Defaults to None. If None, the Ising model with Identity matrix is used.
+            nbase(int, optional): number   N of  integer set  {0,1,.....N}
+            ndim (int, optional): dimension D of the sampling space {0,1,...,N}^D.
             alpha (float, optional): scaling factor for oracle. Defaults to 1.0.
             device_str (str, optional): "cpu" or "cuda". Defaults to "cpu".
         """
@@ -92,8 +92,12 @@ class BioSeqEnv(BitSeqEnv,Env):
                               reward_exp=alpha,reward_max=R_max,reward_min=R_min,name=name)
         action_space = Discrete(nbase * ndim + 1)
         # the last action is the exit action that is only available for complete states
-        # Action in [i*ndim, i*ndim - 1] (i in [0,nbase-1] corresponds to append s with (nbase-1),
-        # i.e replace the last -1 in s with i
+        # Action i in [0, ndim - 1] corresponds to replacing s[i] with 0
+        # Action i in [ndim, 2*ndim - 1] corresponds to replacing s[i] with 1
+        # Action i in [2*ndim, 3*ndim - 1] corresponds to replacing s[i] with 2
+        # .......
+        # Action i in [(nbase-1)*ndim, nbase * ndim - 1] corresponds to replacing s[i] with nbase-1
+        
         if preprocessor_name == "KHot":
             preprocessor = KHotPreprocessor(height=nbase, ndim=ndim,fill_value=-1)
         else:
