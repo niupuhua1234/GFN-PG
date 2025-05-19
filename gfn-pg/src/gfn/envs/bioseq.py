@@ -97,7 +97,7 @@ class BioSeqEnv(BitSeqEnv,Env):
         # Action i in [2*ndim, 3*ndim - 1] corresponds to replacing s[i] with 2
         # .......
         # Action i in [(nbase-1)*ndim, nbase * ndim - 1] corresponds to replacing s[i] with nbase-1
-        
+
         if preprocessor_name == "KHot":
             preprocessor = KHotPreprocessor(height=nbase, ndim=ndim,fill_value=-1)
         else:
