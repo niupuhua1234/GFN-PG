@@ -85,8 +85,8 @@ class BioSeqEnv(BitSeqEnv,Env):
         """
         self.ndim = ndim
         self.nbase = nbase
-        s0 = torch.full((ndim,), -1, dtype=torch.long, device=torch.device(device_str))   #  can use argmin to find the last -1 element
-        sf = torch.full((ndim,), nbase, dtype=torch.long, device=torch.device(device_str)) # can use argmax to find the last nbase element
+        s0 = torch.full((ndim,), -1, dtype=torch.long, device=torch.device(device_str))   
+        sf = torch.full((ndim,), nbase, dtype=torch.long, device=torch.device(device_str)) 
         self.oracle  = Oracle(nbase,ndim,
                               oracle_path,mode_path,
                               reward_exp=alpha,reward_max=R_max,reward_min=R_min,name=name)
