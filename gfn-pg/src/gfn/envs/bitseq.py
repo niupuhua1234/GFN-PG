@@ -130,12 +130,11 @@ class BitSeqEnv(Env):
         num_mode:int =2**4,
         device_str: Literal["cpu", "cuda"] = "cpu",
     ):
-        """Discrete EBM environment.
+        """Discrete sequence environment.
 
         Args:
             ndim (int, optional): dimension D of the sampling space {0, 1}^D.
-            energy (EnergyFunction): energy function of the EBM. Defaults to None. If None, the Ising model with Identity matrix is used.
-            alpha (float, optional): interaction strength the EBM. Defaults to 1.0.
+            alpha (float, optional): interaction strength the energy function. Defaults to 1.0.
             device_str (str, optional): "cpu" or "cuda". Defaults to "cpu".
         """
         self.ndim = ndim
@@ -181,25 +180,26 @@ class BitSeqEnv(Env):
                 #######################
                 backward_masks = self.states_tensor.repeat(rep_dims) == \
                                  torch.arange(0, env.nbase, 1).repeat_interleave(env.ndim)
-                return forward_masks, backward_masks # nbase =2
+                return forward_masks, backward_masks
 
             def update_masks(self,action=None,index=None) -> None:
                 rep_dims=len(self.batch_shape)*(1,)+(env.nbase,)
-                self.forward_masks[...,:-1] = (self.states_tensor == -1).repeat(rep_dims)     # logit are empty we can filled iy  by [0,i].
-                self.forward_masks[..., -1] = (self.states_tensor != -1).all(dim=-1)     #when all logits are filled, we can terminating the generating process by s_f
+                self.forward_masks[...,:-1] = (self.states_tensor == -1).repeat(rep_dims)     # logit are empty we can filled it  by [0,nbase-1].
+                self.forward_masks[..., -1] = (self.states_tensor != -1).all(dim=-1)          #when all logits are filled, we can terminating the generating process by s_f
                 #######
                 self.backward_masks=self.states_tensor.repeat(rep_dims) == \
-                                    torch.arange(0, env.nbase, 1).repeat_interleave(env.ndim)         # logit are filled by i=[0-nbase], we can take backward actions to remove i and denote the empty logit -1
+                                    torch.arange(0, env.nbase, 1).repeat_interleave(env.ndim)  # logit are filled by i=0,..,nbase-1,
+                                                                                               # we can take backward actions to remove i and denote the empty logit -1
         return BitSeqStates
 
 
     def maskless_step(self, states: StatesTensor, actions: BatchTensor) -> StatesTensor:
-        targets= torch.div(actions, self.ndim, rounding_mode='floor') #  fill sources slot, 1....,ndim by target digit 1,....nbase
-        sources=torch.fmod(actions, self.ndim)                        #  [digit 1: slot 1....,ndim,digit 2: slot 1..., ndim
+        targets= torch.div(actions, self.ndim, rounding_mode='floor') #  fill source slot: 1....,ndim by target digit: 0,....nbase-1
+        sources=torch.fmod(actions, self.ndim)                        #  [digit 0: slot 1,....,slot ndim  ;.....;digit nbase-1: slot 1,..., slot ndim]
         return  states.scatter_(-1, sources.unsqueeze(-1), targets.unsqueeze(-1))
 
     def maskless_backward_step(self, states: StatesTensor, actions: BatchTensor) -> StatesTensor:
-        sources= torch.fmod(actions, self.ndim)                        #  sources: state element index
+        sources= torch.fmod(actions, self.ndim)                         #  sources: state element index
         return states.scatter_(-1, sources.unsqueeze(-1), -1)           #  target: -1
 
 
