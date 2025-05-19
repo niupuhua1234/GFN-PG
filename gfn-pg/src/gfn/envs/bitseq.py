@@ -102,8 +102,6 @@ class Replay_G(Replay_x):
                 if torch.any( idx) else torch.tensor(0.) for idx in nstate_index])
         return scores,new_index
 
-
-
 class Oracle(ABC):
     def __init__(self, O_x: StatesTensor,alpha:float):
         super().__init__()
