@@ -33,15 +33,7 @@ class FunctionEstimator(ABC):
         self.env = env
         if module is None:
             assert module_name is not None and output_dim is not None
-            if module_name == "Transformer":
-                input_dim = env.preprocessor.output_shape[0]
-                edge_dict=env.preprocessor.edge_dict
-                module = TransformerNet(input_dim=input_dim,
-                                        output_dim=output_dim,
-                                        edge_dict=edge_dict,
-                                        **nn_kwargs,
-                                        )
-            elif module_name == "NeuralNet":
+            if module_name == "NeuralNet":
                 assert len(env.preprocessor.output_shape) == 1
                 input_dim = env.preprocessor.output_shape[0]
                 module = NeuralNet(input_dim=input_dim,
