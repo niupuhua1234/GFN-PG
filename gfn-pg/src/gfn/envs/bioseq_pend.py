@@ -20,8 +20,6 @@ BackwardMasksTensor = TensorType["batch_shape", "n_actions - 1", torch.bool]
 from src.gfn.envs.bioseq import Oracle
 from src.gfn.envs.bitseq import Replay_x,nbase2dec
 class BioSeqPendEnv(Env):
-    """Environment for discrete energy-based models, based on https://arxiv.org/pdf/2202.01361.pdf"""
-
     def __init__(
         self,
         ndim: int,
@@ -35,14 +33,6 @@ class BioSeqPendEnv(Env):
         nbase=4,
         name="TFbind8"
     ):
-        """Discrete EBM environment.
-
-        Args:
-            ndim (int, optional): dimension D of the sampling space {-1,0, 1,2,..nbase}^D.
-            energy (EnergyFunction): energy function of the EBM. Defaults to None. If None, the Ising model with Identity matrix is used.
-            alpha (float, optional): scaling factor for oracle. Defaults to 1.0.
-            device_str (str, optional): "cpu" or "cuda". Defaults to "cpu".
-        """
         self.ndim = ndim
         self.nbase = nbase
         s0 = torch.full((ndim,), -1, dtype=torch.long, device=torch.device(device_str))
