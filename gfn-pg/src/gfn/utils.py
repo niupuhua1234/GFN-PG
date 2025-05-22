@@ -98,7 +98,7 @@ def get_exact_P_T_G(env, sampler):
     This function evaluates the exact terminating state distribution P_T for graded DAG.
     :math:`P_T(s') = u(s') P_F(s_f | s')` where :math:`u(s') = \sum_{s \in Par(s')}  u(s) P_F(s' | s), and u(s_0) = 1`
     """
-    ordered_states_list = env.ordered_states
+    ordered_states_list = env.ordered_states_list
     probabilities =  sampler.actions_sampler.get_probs(env.all_states)
     u=torch.ones(size=env.all_states.batch_shape)
 
