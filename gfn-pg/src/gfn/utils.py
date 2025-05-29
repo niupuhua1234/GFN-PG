@@ -4,7 +4,7 @@ import torch
 
 from src.gfn.containers import States, Trajectories, Transitions
 from src.gfn.samplers import TrajectoriesSampler,DiscreteActionsSampler
-from src.gfn.envs import Env,HyperGrid,DAG_BN,BitSeqEnv,BioSeqEnv
+from src.gfn.envs import Env,HyperGrid,DAG_BN,BitSeqEnv,BioSeqEnv,BioSeqPendEnv
 from src.gfn.losses import (
     EdgeDecomposableLoss,
     Loss,
@@ -20,7 +20,7 @@ from src.gfn.distributions import Empirical_Dist
 
 def trajectories_to_training_samples(
     trajectories: Trajectories, loss_fn: Loss
-) -> tuple[States,States]    | Transitions | Trajectories:
+) -> tuple[States,States] | Transitions | Trajectories:
     """Converts a Trajectories container to a States, Transitions or Trajectories container,
     depending on the loss.
     """
@@ -78,6 +78,34 @@ def get_exact_P_T_bitseq(env,sampler):
 
     return u[index].view(-1).cpu()
 
+def get_exact_P_T_bitpend(env,sampler):
+    """
+    This function evaluates the exact terminating state distribution P_T for graded DAG.
+    :math:`P_T(s') = u(s') P_F(s_f | s')` where :math:`u(s') = \sum_{s \in Par(s')}  u(s) P_F(s' | s), and u(s_0) = 1`
+    """
+    ordered_states_list = env.ordered_states_list
+    probabilities =torch.zeros(size=(env.n_states,env.action_space.n))
+    probabilities[env.get_states_indices(env.all_states)]=sampler.actions_sampler.get_probs(env.all_states)
+    u = torch.ones(size=(probabilities.shape[0],))
+    for i, states in enumerate(ordered_states_list[1:]):
+        #print(i + 1)
+        index = env.get_states_indices(states)
+        parents = torch.repeat_interleave(states.states_tensor,2,dim=0)
+
+        append_idx= (env.forward_index(states.states_tensor)-1).tolist()
+        actions_idx  =  torch.stack([states.states_tensor[torch.arange(states.batch_shape[0]), append_idx]]
+          + [states.states_tensor[:, 0] + env.nbase],dim=-1).flatten()
+
+        odds_idx=torch.arange(1,states.batch_shape[0]*2,2)
+        parents[ odds_idx,0:-1]= parents[ odds_idx,1:]
+        parents[ odds_idx,-1]  =-1        #de-prepend
+        parents[ odds_idx-1,append_idx] =-1 #de-append
+
+        parents_idx = env.get_states_indices(env.States(parents))
+        u[index] = (u[parents_idx] * probabilities[parents_idx, actions_idx]).reshape(-1, 2).sum(-1)
+
+    return u[index].view(-1).cpu()
+
 def get_exact_P_T(env, sampler):
     """This function evaluates the exact terminating state distribution P_T for DAG .
     P_T(s') = u(s') P_F(s_f | s') where u(s') = \sum_{s \in Par(s')}  u(s) P_F(s' | s), and u(s_0) = 1
@@ -99,19 +127,21 @@ def get_exact_P_T_G(env, sampler):
     :math:`P_T(s') = u(s') P_F(s_f | s')` where :math:`u(s') = \sum_{s \in Par(s')}  u(s) P_F(s' | s), and u(s_0) = 1`
     """
     ordered_states_list = env.ordered_states_list
-    probabilities =  sampler.actions_sampler.get_probs(env.all_states)
+    probabilities =torch.zeros(size=(env.n_states,env.action_space.n))
+    probabilities[env.get_states_indices(env.all_states)]=sampler.actions_sampler.get_probs(env.all_states)
     u=torch.ones(size=env.all_states.batch_shape)
 
     for i,states in enumerate(ordered_states_list[1:]):
         #print(i+1)
+        num_parent_state=states.backward_masks.sum(-1)[0].item()# =i+1 for bitseq =2 for bitppend
         index   =  env.get_states_indices(states)
         parents = env.all_step(states, Backward=True)[states.backward_masks]
-        actions_idx= torch.where(states.backward_masks)[1]#.tolist()
+        actions_idx= env.bction2action( env.States(torch.repeat_interleave(states.states_tensor,2,dim=0)),
+                                        torch.where(states.backward_masks)[1])#.tolist()
         parents_idx= env.get_states_indices(parents)
-        u[index] = (u[parents_idx] * probabilities[parents_idx,actions_idx]).reshape(-1,i+1).sum(-1)
+        u[index] = (u[parents_idx] * probabilities[parents_idx,actions_idx]).reshape(-1, num_parent_state).sum(-1)
 
     return u[index].view(-1).cpu()
-
 
 def validate(
     env: Env,
@@ -139,7 +169,7 @@ def validate(
         trajectories = sampler.sample_T(n_trajectories=n_validation_samples)
         final_states_dist= Empirical_Dist(env)
         final_states_dist_pmf = final_states_dist.pmf(trajectories)
-        if isinstance(env,BitSeqEnv):
+        if isinstance(env,BitSeqEnv) or isinstance(env,BioSeqPendEnv):
             validation_info["mean_diff"] = (env.log_reward(trajectories).exp().mean() / env.mean_reward).clamp(0,1).item()
     else:
         true_dist_pmf = env.true_dist_pmf
@@ -149,9 +179,11 @@ def validate(
             final_states_dist_pmf = get_exact_P_T(env, sampler)
         elif isinstance(env,BitSeqEnv):
             final_states_dist_pmf = get_exact_P_T_bitseq(env, sampler)
+        elif isinstance(env,BioSeqPendEnv):
+            final_states_dist_pmf = get_exact_P_T_bitpend(env, sampler)
         else:
-            raise ValueError("Environment not suppoerted")
-        if  isinstance(env,BitSeqEnv):
+            raise ValueError("Environment Not suppoerted")
+        if  isinstance(env,BitSeqEnv) or isinstance(env,BioSeqPendEnv):
             est_reward = (final_states_dist_pmf* env.log_reward(env.terminating_states).exp()).sum()
             validation_info["mean_diff"] =  (est_reward / env.mean_reward).clamp(0,1).item()
         validation_info["l1_dist"]= 0.5*torch.abs(final_states_dist_pmf - true_dist_pmf).sum().item()
@@ -168,7 +200,8 @@ def validate(
     if hasattr(env, 'replay_x'):
         trajectories = sampler.sample_T(n_trajectories=len(env.oracle.modes))#tf8 256 qm 768 tf10 5000
         env.replay_x.add( trajectories, env.log_reward(trajectories).exp())
-        validation_info["num_modes"]= env.oracle.is_index_modes[torch.unique(env.replay_x.terminating_index)].sum().item()
+        #validation_info["mean_diff"] = (env.replay_x.terminating_rewards[-50000:].mean() / env.mean_reward).clamp(0,1).item()
+        validation_info["num_modes"]= env.oracle.is_index_modes[torch.unique(env.replay_x.x_index)].sum().item()
     return validation_info, final_states_dist_pmf
 
 import networkx as nx
