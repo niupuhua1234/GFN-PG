@@ -38,8 +38,6 @@ def EnvConfig(args):
                       R0=args.R0,R1=0.5,R2=2.0,
                       reward_cos=False,
                       preprocessor_name="KHot")
-    elif args.Env=="DiscreteEBM":
-        env=BitSeqEnv(ndim=16,alpha=args.alpha)
     elif args.Env=="BayesianNetwork":
         scorer, data, graph = get_scorer(args)
         #true_graph = torch.tensor(nx.to_numpy_array(graph, nodelist=sorted(graph.nodes), weight=None))
