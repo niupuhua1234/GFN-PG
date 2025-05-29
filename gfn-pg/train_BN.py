@@ -11,7 +11,7 @@ from simple_parsing.helpers.serialization import encode
 from tqdm import tqdm, trange
 timestamp = datetime.now().strftime('-%Y%m%d_%H%M%S')
 parser = ArgumentParser(description='DAG-GFlowNet-new')
-parser.add_argument('--feature', default=True, action=BooleanOptionalAction)
+parser.add_argument('--project',default='DAG_BN_Eval')
 # Environment
 environment = parser.add_argument_group('Environment')
 environment.add_argument('--Env',default='BayesianNetwork', choices=['BayesianNetwork'])
@@ -33,8 +33,8 @@ optimization.add_argument("--epsilon_start",type=float,default=0.0)
 optimization.add_argument("--epsilon_end",type=float,default=0.0)
 # Optimization
 optimization = parser.add_argument_group('Optimization')
-optimization.add_argument('--Loss',default='TB', choices=['DB','TB','RL','TRPO'])
-optimization.add_argument("--seed", type=int, default=0)
+optimization.add_argument('--Loss',default='RL', choices=['DB','TB','RL','TRPO'])
+optimization.add_argument("--seed", type=int, default=2)
 optimization.add_argument("--optim",default={'lr':0.001,'lr_Z':1.0  ,'lr_V':0.005})
 optimization.add_argument("--GFNModuleConfig",default={'module_name': "NeuralNet",
                                                     'n_hidden_layers': 4,
@@ -48,7 +48,7 @@ replay.add_argument("--replay_buffer_size", type=int, default=0)
 # Miscellaneous
 misc = parser.add_argument_group('Miscellaneous')
 misc.add_argument("--use_wandb", type=bool, default=False)
-misc.add_argument("--validation_interval", type=int, default=10)
+misc.add_argument("--validation_interval", type=int, default=20)
 misc.add_argument("--validation_samples", type=int,default=1000)
 args = parser.parse_args()
 torch.manual_seed(args.seed)
