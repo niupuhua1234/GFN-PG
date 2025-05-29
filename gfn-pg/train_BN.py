@@ -51,7 +51,7 @@ misc.add_argument("--use_wandb", type=bool, default=False)
 misc.add_argument("--validation_interval", type=int, default=20)
 misc.add_argument("--validation_samples", type=int,default=1000)
 args = parser.parse_args()
-torch.manual_seed(args.seed)
+#torch.manual_seed(args.seed)
 args.device_str="cpu" if not torch.cuda.is_available() else args.device_str
 args.PB_parameterized=True if args.PG_used else  args.PB_parameterized
 print('USE_{}_PB_{}_PG_{}'.format(args.device_str,str(args.PB_parameterized),str(args.PG_used)))
