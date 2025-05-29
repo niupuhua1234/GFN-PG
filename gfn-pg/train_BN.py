@@ -14,7 +14,7 @@ parser = ArgumentParser(description='DAG-GFlowNet-new')
 parser.add_argument('--feature', default=True, action=BooleanOptionalAction)
 # Environment
 environment = parser.add_argument_group('Environment')
-environment.add_argument('--Env',default='BayesianNetwork', choices=['HyperGrid','DiscreteEBM','BayesianNetwork'])
+environment.add_argument('--Env',default='BayesianNetwork', choices=['BayesianNetwork'])
 bn = parser.add_argument_group('Type of graph')
 bn.add_argument('--graph', default='erdos_renyi_lingauss', choices=['erdos_renyi_lingauss', 'sachs_continuous'])
 bn.add_argument('--prior', type=str, default='uniform', choices=['uniform', 'erdos_renyi', 'edge', 'fair'])
