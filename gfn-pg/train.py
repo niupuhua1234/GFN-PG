@@ -83,7 +83,9 @@ for i in trange(args.n_iterations):
     states_visited += len(trajectories)
     epsilon = args.epsilon_end + (epsilon - args.epsilon_end) * args.epsilon_decay
     trajectories_sampler.actions_sampler.epsilon = epsilon
-
+    #if replay_buffer is not None:
+    #     replay_buffer.add(training_samples)
+    #     training_samples = replay_buffer.sample(n_trajectories=args.batch_size)
     training_samples.to_device(args.device_str)
     loss=loss_fn.update_model(training_samples)
     to_log = {"loss": loss.item(), "states_visited": states_visited}
