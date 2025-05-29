@@ -23,7 +23,7 @@ from src.gfn.losses import (
     TBParametrization,
     RLParametrization,
 )
-from src.gfn.envs import Env,BitSeqEnv,HyperGrid,DAG_BN,BioSeqEnv
+from src.gfn.envs import Env,BitSeqEnv,HyperGrid,DAG_BN,BioSeqEnv,BioSeqPendEnv
 from src.gfn.samplers import DiscreteActionsSampler, TrajectoriesSampler,BackwardDiscreteActionsSampler
 from data_dag.factories import get_scorer
 from src.gfn.utils import all_dag
