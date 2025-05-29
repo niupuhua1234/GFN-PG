@@ -36,8 +36,7 @@ def EnvConfig(args):
         env=HyperGrid(ndim=args.ndim,
                       height=args.height,
                       R0=args.R0,R1=0.5,R2=2.0,
-                      reward_cos=False,
-                      preprocessor_name="KHot")
+                      reward_cos=False)
     elif args.Env=="BayesianNetwork":
         scorer, data, graph = get_scorer(args)
         #true_graph = torch.tensor(nx.to_numpy_array(graph, nodelist=sorted(graph.nodes), weight=None))
