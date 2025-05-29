@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import ClassVar, Literal, Tuple, cast
-
+from typing import ClassVar, Literal, Tuple, cast,List
 import copy, pickle
 import  os
 import torch
@@ -18,7 +17,13 @@ EnergyTensor = TensorType["state_shape", "state_shape", torch.float]
 ForwardMasksTensor = TensorType["batch_shape", "n_actions", torch.bool]
 BackwardMasksTensor = TensorType["batch_shape", "n_actions - 1", torch.bool]
 from src.gfn.envs.bioseq import Oracle
-from src.gfn.envs.bitseq import Replay_x,nbase2dec
+from src.gfn.envs.bitseq import Replay_x
+
+def nbase2dec(n,b, length):
+    #n:n_base b:bits
+    canonical_base = n ** torch.arange(length).to(b.device, b.dtype)
+    return torch.sum(canonical_base * b, -1)
+
 class BioSeqPendEnv(Env):
     def __init__(
         self,
@@ -43,8 +48,10 @@ class BioSeqPendEnv(Env):
         action_space = Discrete(2*nbase + 1)
         bction_space = Discrete(2)
         # the last action is the exit action that is only available for complete states
-        # Action i  in [0, nbase - 1]  corresponds to preppend s with i,
-        # Action i  in [nbase, 2base-1] corresponds tp append s with i
+        # Action  i ∈ [0, nbase - 1]  corresponds to append s with i,
+        # Action  i ∈ [nbase, 2base-1] corresponds tp prepend s with i
+        # Bction =0                   corresponds tp de-append digits, i.e. remove the last digit
+        # Bction =1                  corresponds to de-prepend digits, i.e. remove the first digit
         if preprocessor_name == "KHot":
             preprocessor = KHotPreprocessor(height=nbase, ndim=ndim,fill_value=-1)  #heght=nbase+1 for encoding -1 or =nbase,fill_value =-1
         else:
@@ -56,6 +63,7 @@ class BioSeqPendEnv(Env):
                          s0=s0, sf=sf,
                          device_str=device_str,
                          preprocessor=preprocessor,)
+
     def make_States_class(self) -> type[States]:
         env = self
         class BioSeqStates(States):
@@ -74,10 +82,10 @@ class BioSeqPendEnv(Env):
                 "Mask illegal (forward and backward) actions."
                 rep_dims = len(self.batch_shape) * (1,) + (2*env.nbase,)
                 forward_masks = torch.ones((*self.batch_shape, env.n_actions),dtype=torch.bool,device=env.device)
-                forward_masks[..., :-1] = (self.states_tensor==-1).any(-1,keepdim=True).repeat(rep_dims)
-                forward_masks[..., -1]  = (self.states_tensor !=-1).all(-1)
+                forward_masks[..., :-1] = (self.states_tensor==-1).any(-1,keepdim=True).repeat(rep_dims) # sequences are not complete, we append/prepend it by i ∈[0,nabse-1]
+                forward_masks[..., -1]  = (self.states_tensor !=-1).all(-1)  # sequences are complete, the process is terminated by transiting to s_f
                 rep_dims = len(self.batch_shape) * (1,) + (2,)
-                backward_masks          = (~self.is_initial_state).unsqueeze(-1).repeat(rep_dims)
+                backward_masks          = (~self.is_initial_state).unsqueeze(-1).repeat(rep_dims)  # sequences are not empty, we can remove the last/first digits.
                 return forward_masks, backward_masks
 
             def update_masks(self,action=None,index=None) -> None:
@@ -91,43 +99,112 @@ class BioSeqPendEnv(Env):
 
     def bction2action(self,states: States, bctions: TensorLong) ->TensorLong:
         actions=torch.full_like(bctions,fill_value=-1)
-        actions[bctions==0]=states.states_tensor[bctions==0,self.back_index(states.states_tensor[bctions==0])-1]
-        actions[bctions==1]=self.nbase+states.states_tensor[bctions==1,0]
+        last_index         = self.backward_index(states.states_tensor[bctions==0])
+        actions[bctions==0]=states.states_tensor[bctions==0,last_index]  #bction=0:  action=last digit
+        actions[bctions==1]=states.states_tensor[bctions==1,         0]+self.nbase#baction=1:   action= nbase+ first digit
         return actions
     def action2bction(self,states: States, actions: TensorLong) ->TensorLong:
-        bctions=torch.div(actions, self.nbase, rounding_mode='floor')
+        bctions=torch.div(actions, self.nbase, rounding_mode='floor')   #bction =action//nbase  =0 or 1
         return bctions
 
-    def foward_index(self,states:StatesTensor ) -> BatchTensor:
-        #argmin to find the last -1 element
-        return (states > -1).int().argmin(-1)
+    def forward_index(self,states:StatesTensor ) -> BatchTensor:
+        #  use argmin to find the first -1 element
+        #  If the seq is complete and there is no -1, then return the first element.
+        return (states > -1).int().argmin(-1) # or return (states <= -1).int().argmax(-1)
 
-    def back_index(self,states:StatesTensor ) -> BatchTensor:
-        # can use argmax to find the last nbase element
-        index=(states > -1).int().argmin(-1)
-        index[index==0]=self.ndim
-        return index
+    def backward_index(self,states:StatesTensor ) -> BatchTensor:
+        #  use argmin to find the last non -1 element
+        #  If the seq is complete and there is no -1, then return the last element.
+        return (states > -1).int().argmin(-1)-1
 
     def maskless_step(self, states: StatesTensor, actions: BatchTensor) -> StatesTensor:
         new_states = states.clone()
         sources= torch.div(actions, self.nbase, rounding_mode='floor')
         targets= torch.fmod(actions, self.nbase)
-        new_states[sources ==0,self.foward_index(states[sources ==0])]     = targets[sources ==0]  #append
-        new_states[sources ==1,1:] = states[sources ==1,:-1]                           # -1 element must be in the end of the sequence
-        new_states[sources ==1,0]  = targets[sources ==1]                              #prepend
+        new_states[sources ==0,self.forward_index(states[sources ==0])]     = targets[sources ==0]  #append
+        new_states[sources ==1,1:] = states[sources ==1,:-1]
+        new_states[sources ==1,0]  = targets[sources ==1]                                          #prepend
         return new_states
 
     def maskless_backward_step(self, states: StatesTensor, actions: BatchTensor) -> StatesTensor:
         new_states=states.clone()
-        sources= torch.div(actions, self.nbase, rounding_mode='floor')
-        new_states[sources ==0,self.back_index(states[sources ==0])-1]  = -1                       #append
-        new_states[sources ==1,:-1] = states[sources ==1,1:]
-        new_states[sources ==1,self.back_index(states[sources == 1])-1] = -1   #prepend   ???
+        new_states[actions ==0,self.backward_index(states[actions ==0])]  = -1   #de-append
+        new_states[actions ==1,:-1] = states[actions ==1,1:]
+        new_states[actions ==1,-1] = -1   #de-prepend
         return new_states
+
+    def get_states_indices(self, states: States) -> BatchTensor:
+        """The chosen encoding is the following: -1 -> 0, 0 -> 1, 1 -> 2,.... then we nbase-1 convert to nbase """
+        return nbase2dec(self.nbase, states.states_tensor+1,self.ndim).long().cpu().tolist()
+
+    def get_terminating_states_indices(self, states: States) -> BatchTensor:
+        return nbase2dec(self.nbase, states.states_tensor,self.ndim).long().cpu().tolist()
+
+    @property
+    def n_states(self) -> int:
+        return sum([self.nbase**(i+1) for i in range(self.ndim)])+1
+
+    @property
+    def n_terminating_states(self) -> int:
+        return self.nbase**self.ndim
+
+    @property
+    def ordered_states_list(self) -> List[States]:
+        # This is brute force !
+        digits = torch.arange(self.nbase, device=self.device)
+        ordered_states=[self.States(-torch.ones(self.ndim,dtype=torch.long))]
+        first_states=torch.cartesian_prod(*[digits]).unsqueeze(-1)
+        padding_states = - torch.ones(self.nbase, self.ndim - 1, dtype=torch.long)
+        ordered_states.append(self.States(torch.cat([first_states,  padding_states],dim=-1)))
+
+
+        if self.ndim>1:
+            for i in range(2,self.ndim+1):
+                digit_states = torch.cartesian_prod(*[digits] * i)
+                padding_states = - torch.ones(digit_states.shape[0], self.ndim - i, dtype=torch.long)
+                add_states = torch.cat([digit_states, padding_states], dim=-1)
+                ordered_states.append(self.States(add_states))
+            return ordered_states
+        else:
+            return ordered_states
+
+    @property
+    def ordered_states(self) -> States:
+        # This is brute force !
+        digits = torch.arange(self.nbase, device=self.device)
+        ordered_states = torch.cat((torch.tensor([-1]), torch.cartesian_prod(*[digits]),)).unsqueeze(-1)
+        padding_states = - torch.ones(ordered_states.shape[0], self.ndim - 1, dtype=torch.long)
+        ordered_states =torch.cat([ordered_states,  padding_states],dim=-1)
+        if self.ndim>1:
+            for i in range(2,self.ndim+1):
+                digit_states = torch.cartesian_prod(*[digits] * i)
+                padding_states = - torch.ones(digit_states.shape[0],self.ndim-i,dtype=torch.long)
+                add_states = torch.cat([digit_states,padding_states],dim=-1)
+                ordered_states=torch.cat([ordered_states,add_states],dim=0)
+            return self.States(ordered_states)
+        else:
+            return self.States(ordered_states)
+
+    @property
+    def all_states(self) -> States:
+        # This is brute force !
+        return self.ordered_states
+
+    @property
+    def terminating_states(self) -> States:
+        digits = torch.arange(self.nbase, device=self.device)
+        all_states = torch.cartesian_prod(*[digits] * self.ndim)
+        return self.States(all_states)
 
     def log_reward(self, final_states: States) -> BatchTensor:
         raw_states = final_states.states_tensor
         return self.oracle(raw_states).log()
+
+    @property
+    def true_dist_pmf(self) -> torch.Tensor:
+        log_reward=self.log_reward(self.terminating_states)
+        true_dist = log_reward-torch.logsumexp(log_reward,-1)
+        return true_dist.exp().cpu()
     @property
     def mean_reward(self)->torch.float:
         return (self.oracle.O_y **2).sum()/self.oracle.O_y.sum()
