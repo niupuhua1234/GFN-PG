@@ -169,8 +169,6 @@ def Config(args):
         parametrization, loss=DBLossConfig(env,args)
     elif args.Loss == "TB":
         parametrization, loss = TBLossConfig(env,args)
-    elif args.Loss == "TTB":
-        parametrization, loss = TBLossConfig(env, args,)
     elif args.Loss == "Sub_TB":
         parametrization, loss= SubTBLossConfig(env,args)
     elif args.Loss == "RL":
