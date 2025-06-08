@@ -24,7 +24,7 @@ SOFTWARE.
 
 ## Scope
 
-This MIT license applies **only** to the following files and directories:
+This MIT license applies **only** to the following files:
 
 - gfn-pg/src/gfn/losses/trajectory_RL.py
 - gfn-pg/src/gfn/losses/trajectory_TRPO.py
