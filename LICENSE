@@ -26,5 +26,12 @@ SOFTWARE.
 
 This MIT license applies **only** to the following files and directories:
 
-- `my_code/` directory
-- `utils/helper.py`
+- gfn-pg/src/gfn/losses/trajectory_RL.py
+- gfn-pg/src/gfn/losses/trajectory_TRPO.py
+- gfn-pg/src/gfn/losses/base.py
+- gfn-pg/src/gfn/envs/dagbn.py
+- gfn-pg/src/gfn/envs/bitseq.py
+- gfn-pg/src/gfn/envs/bioseq_pend.py
+- gfn-pg/src/gfn/envs/bioseq.py
+
+
