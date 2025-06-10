@@ -1,4 +1,4 @@
-einops @ file:///home/conda/feedstock_root/build_artifacts/einops_1681884646122/work
+einops==0.6.1
 future==0.18.3
 gymnasium==0.28.1
 matplotlib==3.7.1
