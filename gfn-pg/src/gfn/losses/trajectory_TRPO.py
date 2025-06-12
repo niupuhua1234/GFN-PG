@@ -11,7 +11,6 @@ LogPTrajectoriesTensor = TensorType["max_length", "n_trajectories", float]
 
 
 class Trajectory_TRPO(TrajectoryRL):
-    #self.logit_PF_old=copy.deepcopy(self.parametrization.logit_PF)
 
     def __call__(self, trajectories: Trajectories) -> LossTensor:
         pass
