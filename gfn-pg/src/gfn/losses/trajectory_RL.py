@@ -192,7 +192,7 @@ class TrajectoryRL(TrajectoryDecomposableLoss):
         return A_loss + Z_diff
 
     def B_update_model(self, trajectories: Trajectories):
-         "TB based optmiztion for backward trajectory"
+        #TB based optmiztion for backward trajectory
         log_pb_traj= self.get_pbs(trajectories)
         if self.PG_used:
             log_pg_traj = self.get_pgs(trajectories)
@@ -239,7 +239,6 @@ class TrajectoryRL(TrajectoryDecomposableLoss):
         p_log_p = -(log_pf * log_pf.exp()).sum(-1)
         return p_log_p
 
-    
     def estimate_advantages(self,trajectories:Trajectories,scores,values,unbias=False,unbias_V=True):
         """
         Returns:
@@ -265,7 +264,7 @@ class TrajectoryRL(TrajectoryDecomposableLoss):
 
             tar_prev[masks[i]] = deltas[masks[i]] + lamb_V * tar_prev[masks[i]]
             tar[i][masks[i]] = tar_prev[masks[i]] + values[i][masks[i]]
-            
+
             #tar_prev[masks[i]] = scores[i][masks[i]] + tar_prev[masks[i]] # unbias directly
             #tar[i][masks[i]]   = tar_prev[masks[i]]
 

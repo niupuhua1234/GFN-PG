@@ -2,6 +2,7 @@ from typing import Tuple
 
 import torch
 from torchtyping import TensorType
+from torch.nn.functional import huber_loss
 from src.gfn.containers import Trajectories
 from src.gfn.estimators import LogZEstimator
 from src.gfn.losses.base import PFBasedParametrization, TrajectoryDecomposableLoss
@@ -71,6 +72,7 @@ class TrajectoryBalance(TrajectoryDecomposableLoss):
     def __call__(self, trajectories: Trajectories) -> LossTensor:
         scores= self.get_scores(trajectories)
         loss=scores.pow(2).mean()
+        #loss=huber_loss(scores)
         if torch.isnan(loss).any():raise ValueError("loss is nan")
         return loss
 

@@ -64,6 +64,7 @@ class States(Container, ABC):
                                             s_0 need to be masked  as it is valid input within forward traj.
         backward_masks (BackwardMasksTensor):representing which actions are allowed at each state.
     """
+    #公共属性 under this class
     state_shape: ClassVar[tuple[int, ...]]  # Shape of one state  #class variabe
     s0: ClassVar[OneStateTensor]            # Source state of the DAG
     sf: ClassVar[OneStateTensor]            # Dummy state, used to pad a batch of states
@@ -81,6 +82,7 @@ class States(Container, ABC):
         else:
             self.forward_masks,self.backward_masks = forward_masks,backward_masks
 
+    #可以在不实例化的情形下访问该方法， 相当于一种实例化操作的装饰
     @classmethod
     def from_batch_shape(cls, batch_shape: tuple[int], random: bool = False) -> States:
         """Create a States object with the given batch shape, all initialized to s_0.

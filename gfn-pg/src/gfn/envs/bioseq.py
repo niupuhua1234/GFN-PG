@@ -22,6 +22,7 @@ ForwardMasksTensor = TensorType["batch_shape", "n_actions", torch.bool]
 BackwardMasksTensor = TensorType["batch_shape", "n_actions - 1", torch.bool]
 from src.gfn.envs.bitseq import Replay_G,Replay_x,nbase2dec
 
+
 class Oracle(ABC):
     def __init__(self, nbase,ndim,oracle_path,mode_path=None,reward_exp=3,reward_max=10.0,reward_min=1e-3,name="TFbind8"):
         super().__init__()
@@ -38,7 +39,7 @@ class Oracle(ABC):
 
         oracle_data['y'] =oracle_data['y']**reward_exp  # milden sharpness
         oracle_data['y']=oracle_data['y']* reward_max/oracle_data['y'].max() # scale up
-
+        #oracle_data['y']=torch.maximum(oracle_data['y'],torch.tensor(reward_min)) # scale down  for tf8
         self.O_y = oracle_data['y'].squeeze()
         self.O_x =oracle_data['x']
         self.nbase=nbase
@@ -85,8 +86,8 @@ class BioSeqEnv(BitSeqEnv,Env):
         """
         self.ndim = ndim
         self.nbase = nbase
-        s0 = torch.full((ndim,), -1, dtype=torch.long, device=torch.device(device_str))   
-        sf = torch.full((ndim,), nbase, dtype=torch.long, device=torch.device(device_str)) 
+        s0 = torch.full((ndim,), -1, dtype=torch.long, device=torch.device(device_str))
+        sf = torch.full((ndim,), nbase, dtype=torch.long, device=torch.device(device_str))
         self.oracle  = Oracle(nbase,ndim,
                               oracle_path,mode_path,
                               reward_exp=alpha,reward_max=R_max,reward_min=R_min,name=name)
@@ -111,7 +112,6 @@ class BioSeqEnv(BitSeqEnv,Env):
     def log_reward(self, final_states: States) -> BatchTensor:
         raw_states = final_states.states_tensor
         return self.oracle(raw_states).log()
-
     @property
     def mean_reward(self)->torch.float:
         return (self.oracle.O_y **2).sum()/self.oracle.O_y.sum()

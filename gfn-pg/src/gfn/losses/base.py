@@ -141,7 +141,8 @@ class TrajectoryDecomposableLoss(Sub_TrajectoryDecomposableLoss,ABC):
         else:
             valid_index = ~trajectories.is_sink_action
             valid_states= trajectories.states[1:][valid_index]    #sT<-s0: [1:] states traj is one bigger than actions traj by an s_T in  backward samples
-            valid_actions=trajectories.env.bction2action(trajectories.states[:-1][valid_index], trajectories.actions[valid_index])
+            valid_actions=trajectories.env.bction2action(trajectories.states[:-1][valid_index],
+                                                         trajectories.actions[valid_index])
         if valid_states.batch_shape != tuple(valid_actions.shape):
             raise AssertionError("Something wrong happening with log_pf evaluations")
         return valid_states,valid_actions,valid_index
@@ -159,12 +160,12 @@ class TrajectoryDecomposableLoss(Sub_TrajectoryDecomposableLoss,ABC):
         """
         if not (trajectories.is_backward):
             inter_index=~trajectories.is_sink_action & ~trajectories.is_terminating_action # filter padding s_f and s_T
-            non_init_valid_states  =  trajectories.states[1:][inter_index]                 # [1:] filter out s_0 and align with acitons
+            non_init_valid_states  =  trajectories.states[1:][inter_index]                 # [1:] filter out s_0 and align with aciton(错一格)
             non_exit_valid_actions = trajectories.env.action2bction( trajectories.states[:-1][inter_index],
                                                                      trajectories.actions[inter_index])
         else:
             inter_index = ~trajectories.is_sink_action                     # filter padding s_f( dummy states after reaching s0)
-            non_init_valid_states = trajectories.states[:-1][inter_index]  #sT->s0 [:-1] states traj is one bigger than actions traj by an s_0
+            non_init_valid_states = trajectories.states[:-1][inter_index]  #sT->s0 [:-1] state traj is one bigger than actions traj by an s_0
             non_exit_valid_actions = trajectories.actions[inter_index]
         return non_init_valid_states,non_exit_valid_actions,inter_index
 
@@ -179,14 +180,14 @@ class TrajectoryDecomposableLoss(Sub_TrajectoryDecomposableLoss,ABC):
              log_p_trajectories: log probabilities of each transition in each trajectory
         Return:
             cumulative max_length+1 sums of log probabilities of each trajectory.
-            
+
         e.g. forward prob of forward traj:
             Σ  log π|st  [ 0,        Σ(0:1)         ,....., Σ(0:3)     ,....., Σ(0:T) ,       Σ(0:f)   ].
                            0, logp(τ_{0:1}|s_0),....., logp(τ_{0:3}|0) ,....., logp(τ_{0:T}|0),logp(τ_{0:f}|0)
             backward prob of forward traj:
             Σ  log π|st  [ 0,       Σ(0:1)     , ....,  Σ(0:3)         ,....., Σ(0:T),         ____________].
                            0,  logp(τ_{0:1}|s_1),....., logp(τ_{0:3}|3),....., logp(τ_{0:T}|T), _____________
-        
+
         """
         return torch.cat((torch.zeros(1, trajectories.n_trajectories, device=log_p_trajectories.device),
                           log_p_trajectories.cumsum(dim=0),),dim=0)

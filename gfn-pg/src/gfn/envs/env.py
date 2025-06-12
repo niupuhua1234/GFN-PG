@@ -155,8 +155,10 @@ class Env(ABC):
             states: States,
             actions: TensorLong
     ) -> States:
-        """Function that takes a batch of states and actions and returns a batch of next
-        states and a boolean tensor indicating sink states in the new batch.(Noet: for one time step)"""
+        """
+        Function that takes a batch of states and actions and returns a batch of next states
+        and a boolean tensor indicating sink states in the new batch.(Noet: for one time step)
+        """
 
         #terminating states in the past
         new_states = deepcopy(states)

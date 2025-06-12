@@ -6,7 +6,7 @@ from torch.distributions import Categorical
 from torchtyping import TensorType
 
 from src.gfn.containers.states import States
-from src.gfn.estimators import LogEdgeFlowEstimator, LogitPBEstimator, LogitPFEstimator
+from src.gfn.estimators import LogEdgeFlowEstimator, LogitPBEstimator, LogitPFEstimator,LogStateFlowEstimator
 
 # Typing
 Tensor2D = TensorType["batch_size", "n_actions"]
@@ -29,6 +29,8 @@ class ActionsSampler(ABC):
             Tuple[Tensor[batch_size], Tensor[batch_size]]: A tuple of tensors containing the log probabilities of the sampled actions, and the sampled actions.
         """
         pass
+    def action_prob_gather(self,probs,actions):
+        return torch.gather(probs,dim=-1,index=actions.unsqueeze(-1)).squeeze(-1)
 
 
 class BackwardActionsSampler(ActionsSampler):
@@ -71,7 +73,7 @@ class DiscreteActionsSampler(ActionsSampler):
             Tensor2D: A 2D tensor of shape (batch_size, n_actions) containing the transformed logits.
         """
         logits = self.estimator(states)
-        if torch.any(torch.all(torch.isnan(logits), 1)):
+        if torch.any(torch.all(torch.isnan(logits), -1)):
             raise ValueError("NaNs in estimator")    # 0 masking to be log(0)=-inf??
         logits[~states.forward_masks] = fill_value   # -float('inf') softmax -> 0.   logsoftmax -> -inf
         return logits
@@ -86,7 +88,7 @@ class DiscreteActionsSampler(ActionsSampler):
             logits[..., -1] -= self.sf_bias
             probs = torch.softmax(logits / self.temperature, dim=-1)  # softmax[(P_logit-bias)/T]  [-inf, 0.2]softmax-> [0,1]
             # when the element of  a vector is all inf softmax will return Nan, this means that all actions are maksed this is in s_f.
-            if torch.any(torch.all(torch.isnan(probs), 1)):
+            if torch.any(torch.all(torch.isnan(probs), -1)):
                 raise ValueError("No terminating action or further action is allowed ")
         return probs
 
@@ -105,13 +107,13 @@ class DiscreteActionsSampler(ActionsSampler):
             actions = torch.where(choice,uniform_dist.sample(),dist.sample())
             actions_log_probs = torch.where(choice,uniform_dist.log_prob(actions),dist.log_prob(actions))
 
-            while torch.any(dist.probs[torch.arange(len(actions)),actions]==0.):  # some impossible event with probability < e-10 happens resample !
+            while torch.any(self.action_prob_gather(dist.probs,actions)==0.):  # some impossible event with probability < e-10 happens resample !
                 actions = torch.where(choice, uniform_dist.sample(), dist.sample())
                 actions_log_probs = torch.where(choice, uniform_dist.log_prob(actions), dist.log_prob(actions))
         else:
             actions = dist.sample()
             actions_log_probs = dist.log_prob(actions)
-            while torch.any(dist.probs[torch.arange(len(actions)),actions]==0.):   #while torch.any(actions_log_probs.abs() > 15):
+            while torch.any(self.action_prob_gather(dist.probs,actions)==0.):   #while torch.any(actions_log_probs.abs() > 15):
                 actions = dist.sample()
                 actions_log_probs = dist.log_prob(actions)
         return actions_log_probs, actions
@@ -134,7 +136,7 @@ class BackwardDiscreteActionsSampler(DiscreteActionsSampler, BackwardActionsSamp
 
     def get_logits(self, states: States,fill_value=-float('inf')) -> Tensor2D:
         logits =  self.estimator(states)
-        if torch.any(torch.all(torch.isnan(logits), 1)):
+        if torch.any(torch.all(torch.isnan(logits), -1)):
             raise ValueError("NaNs in estimator")
         logits[~states.backward_masks] = fill_value
         return logits
@@ -147,7 +149,7 @@ class BackwardDiscreteActionsSampler(DiscreteActionsSampler, BackwardActionsSamp
         logits = self.get_logits(states)
         with torch.no_grad():
             probs = torch.softmax(logits / self.temperature, dim=-1)
-            if torch.any(torch.all(torch.isnan(probs), 1)):
+            if torch.any(torch.all(torch.isnan(probs), -1)):
                 raise ValueError("Already in zero states, no further backward action is allowed")
         return probs
 
@@ -156,7 +158,7 @@ class BackwardDiscreteActionsSampler(DiscreteActionsSampler, BackwardActionsSamp
         dist = Categorical(probs=probs)
         actions = dist.sample()
         actions_log_probs = dist.log_prob(actions)
-        while torch.any(dist.probs[torch.arange(len(actions)),actions]==0.):  # some impossible event with probability < e-10 happens resample !
+        while torch.any(self.action_prob_gather(dist.probs,actions)==0.):  # some impossible event with probability < e-10 happens resample !
             actions=dist.sample()
             actions_log_probs=dist.log_prob(actions)
         return actions_log_probs, actions
