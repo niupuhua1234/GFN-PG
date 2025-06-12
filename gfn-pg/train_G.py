@@ -14,7 +14,7 @@ parser = ArgumentParser(description='DAG-GFlowNet')
 parser.add_argument('--project', default='TBbind8_RL_new')
 # Environment
 environment = parser.add_argument_group('Environment')
-environment.add_argument('--Env',default='qm9str', choices=['TFbind8','qm9str','TFbind10','sehstr'])
+environment.add_argument('--Env',default='TFbind8', choices=['TFbind8','qm9str','TFbind10','sehstr'])
 #environment.add_argument('--R_max',default=10,type=int)
 #environment.add_argument('--R_min',default=0.001,type=float)
 #environment.add_argument('--alpha',default=3,type=int)
