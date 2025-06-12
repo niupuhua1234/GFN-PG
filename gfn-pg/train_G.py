@@ -6,7 +6,7 @@ from src.gfn.containers.replay_buffer import ReplayBuffer
 from src.gfn.utils import trajectories_to_training_samples, validate
 
 
-from argparse import ArgumentParser,BooleanOptionalAction
+from argparse import ArgumentParser
 from simple_parsing.helpers.serialization import encode
 from tqdm import tqdm, trange
 timestamp = datetime.now().strftime('-%Y%m%d_%H%M%S')
