@@ -46,7 +46,7 @@ misc.add_argument("--use_wandb", type=bool, default=False)
 misc.add_argument("--validation_interval", type=int, default=10)
 misc.add_argument("--validation_samples", type=int,default=10000)
 args = parser.parse_args()
-#torch.manual_seed(args.seed)
+torch.manual_seed(args.seed)
 args.device_str="cpu" if not torch.cuda.is_available() else args.device_str
 args.PB_parameterized=True if args.PG_used else args.PB_parameterized
 print('USE_{}_PB_{}_PG_{}'.format(args.device_str,str(args.PB_parameterized),str(args.PG_used)))
@@ -62,7 +62,7 @@ else:
 if args.Loss not in ['TRPO','RL']:
     name=args.Loss+'-B' if args.PB_parameterized else args.Loss+'-U'
 else:
-    assert args.epsilon_start==.0, 'epsilon_start should be .0 for on-policy method!'
+    assert args.epsilon_start ==0.0, 'epsilon_start should be 0.0 for on-policy method!'
     if args.Loss in ['TRPO']:
         name= 'RL-T'
     else:
@@ -77,6 +77,11 @@ if args.use_wandb:
 epsilon=args.epsilon_start
 states_visited = 0
 for i in trange(args.n_iterations):
+    # env.States.s0=env.States.s0.cpu()
+    # env.States.sf=env.States.sf.cpu()
+    # env.s0=env.States.s0.cpu()
+    # env.sf=env.States.sf.cpu()
+    # env.device=torch.device('cpu')
     trajectories = trajectories_sampler.sample(n_trajectories=args.batch_size)
     training_samples = trajectories_to_training_samples(trajectories, loss_fn)
     training_last_states=training_samples.last_states
