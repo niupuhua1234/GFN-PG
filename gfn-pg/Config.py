@@ -26,7 +26,6 @@ from src.gfn.losses import (
 from src.gfn.envs import Env,BitSeqEnv,HyperGrid,DAG_BN,BioSeqEnv,BioSeqPendEnv
 from src.gfn.samplers import DiscreteActionsSampler, TrajectoriesSampler,BackwardDiscreteActionsSampler
 from data_dag.factories import get_scorer
-from src.gfn.utils import all_dag
 import networkx as nx
 import torch
 from typing import Tuple
@@ -40,7 +39,7 @@ def EnvConfig(args):
     elif args.Env=="BayesianNetwork":
         scorer, data, graph = get_scorer(args)
         #true_graph = torch.tensor(nx.to_numpy_array(graph, nodelist=sorted(graph.nodes), weight=None))
-        all_graphs = torch.tensor(np.load('DAG-5-list.npy')) #all_graphs=list(all_dag(5))
+        all_graphs = torch.tensor(np.load('DAG-5-list.npy'))
         env=DAG_BN(n_dim=5,all_graphs=all_graphs,score=scorer)
     elif args.Env == "TFbind8":
         env = BioSeqEnv(ndim=8, nbase=4,
@@ -70,6 +69,7 @@ def SamplerConfig(
         raise ValueError(f"Cannot parse sampler for parametrization {parametrization}")
     actions_sampler = DiscreteActionsSampler(estimator=estimator)
     B_actions_sampler=BackwardDiscreteActionsSampler(estimator=B_estimator)
+
     trajectories_sampler = TrajectoriesSampler(env=env, actions_sampler=actions_sampler)
     B_trajectories_sampler = TrajectoriesSampler(env=env, actions_sampler=B_actions_sampler)
     return trajectories_sampler,B_trajectories_sampler
