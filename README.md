@@ -14,7 +14,7 @@ The code is adapted from [*torchgfn*](https://pypi.org/project/torchgfn/0.1.3/) 
 Clone the code
 ```
 git clone https://github.com/niupuhua1234/GFN-PG.git
-cd GFN-PG/gfn-pg
+cd ./GFN-PG/gfn-pg
 ```
 
 Create environment with conda:
