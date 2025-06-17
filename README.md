@@ -13,7 +13,7 @@ The code is adapted from [*torchgfn*](https://pypi.org/project/torchgfn/0.1.3/) 
 ## Installation
 Clone the repository
 ```
-got clone https://github.com/niupuhua1234/GFN-PG.git
+git clone https://github.com/niupuhua1234/GFN-PG.git
 cd GFN-PG/gfn-pg
 ```
 
