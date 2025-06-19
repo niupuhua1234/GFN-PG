@@ -6,7 +6,6 @@ import copy, pickle
 import torch
 from gymnasium.spaces import Discrete
 from torchtyping import TensorType
-from functorch import vmap
 from src.gfn.containers.states import States
 from src.gfn.envs.env import Env
 from src.gfn.envs  import BitSeqEnv
