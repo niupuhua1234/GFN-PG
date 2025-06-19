@@ -5,7 +5,7 @@ import torch
 import torch.nn as nn
 from gymnasium.spaces import Discrete
 from torchtyping import TensorType
-from torch import vmap
+from torch.func import vmap
 from src.gfn.containers.states import States
 from src.gfn.envs.env import Env
 # Typing
