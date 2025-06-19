@@ -11,11 +11,7 @@ Code for the ICML 2024 paper '[GFlowNet Training by Policy Gradients](https://pr
 The code is adapted from [*torchgfn*](https://pypi.org/project/torchgfn/0.1.3/) but not compatible with it. Please make sure *torchgfn* is not installed in your Python environment when running the code, in case of some unexpected function importing. 
 
 ## Installation
-Clone the code
-```
-git clone https://github.com/niupuhua1234/GFN-PG.git
-cd ./GFN-PG/gfn-pg
-```
+Clone the code and set ```./GFN-PG/gfn-pg``` as the root working directory
 
 Create environment with conda:
 ```
