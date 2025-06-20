@@ -34,5 +34,6 @@ This MIT license applies **only** to the following files:
 - gfn-pg/src/gfn/envs/bioseq_pend.py
 - gfn-pg/src/gfn/envs/bioseq.py
 - gfn-pg/src/gfn/utils.py
+- gfn-pg/data_dag/scores/base_torch.py
 
 
