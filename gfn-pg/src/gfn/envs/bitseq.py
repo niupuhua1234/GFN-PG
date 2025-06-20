@@ -132,7 +132,7 @@ class BitSeqEnv(Env):
 
         Args:
             ndim (int, optional): dimension D of the sampling space {0, 1}^D.
-            alpha (float, optional): interaction strength the energy function. Defaults to 1.0.
+            alpha (float, optional): interaction strength the oracle function. Defaults to 1.0.
             device_str (str, optional): "cpu" or "cuda". Defaults to "cpu".
         """
         self.ndim = ndim
