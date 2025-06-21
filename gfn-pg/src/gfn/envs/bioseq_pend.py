@@ -53,7 +53,7 @@ class BioSeqPendEnv(Env):
         # Bction =0                   corresponds tp de-append digits, i.e. remove the last digit
         # Bction =1                  corresponds to de-prepend digits, i.e. remove the first digit
         if preprocessor_name == "KHot":
-            preprocessor = KHotPreprocessor(height=nbase, ndim=ndim,fill_value=-1)  #heght=nbase+1 for encoding -1 or =nbase,fill_value =-1
+            preprocessor = KHotPreprocessor(height=nbase, ndim=ndim,fill_value=-1)
         else:
             raise ValueError(f"Unknown preprocessor {preprocessor_name}")
 
