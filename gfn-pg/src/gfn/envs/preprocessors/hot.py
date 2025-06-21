@@ -100,4 +100,3 @@ class KHotPreprocessor(Preprocessor):
             hot[index]  =one_hot(states.states_tensor[index],self.height)
         hot = rearrange(hot, "... a b -> ... (a b)").float() # 对最后两个dims  按[0,....] + [1,...] ->[0,...,1,...] 的方式 合并dims
         return hot
-#hot=torch.zeros(128,8,4,dtype=torch.long)
