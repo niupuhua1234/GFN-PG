@@ -16,7 +16,6 @@ TensorLong = TensorType["batch_shape", torch.long]
 TensorFloat = TensorType["batch_shape", torch.float]
 StatesTensor = TensorType["batch_shape", "state_shape", torch.float]
 BatchTensor = TensorType["batch_shape"]
-EnergyTensor = TensorType["state_shape", "state_shape", torch.float]
 ForwardMasksTensor = TensorType["batch_shape", "n_actions", torch.bool]
 BackwardMasksTensor = TensorType["batch_shape", "n_actions - 1", torch.bool]
 from src.gfn.envs.bitseq import Replay_G,Replay_x,nbase2dec
