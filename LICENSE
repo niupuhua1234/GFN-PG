@@ -26,6 +26,7 @@ SOFTWARE.
 
 This MIT license applies **only** to the following files:
 
+- gfn-pg/src/gfn/losses/trajectory_balance.py
 - gfn-pg/src/gfn/losses/trajectory_RL.py
 - gfn-pg/src/gfn/losses/trajectory_TRPO.py
 - gfn-pg/src/gfn/losses/base.py
@@ -34,6 +35,7 @@ This MIT license applies **only** to the following files:
 - gfn-pg/src/gfn/envs/bitseq.py
 - gfn-pg/src/gfn/envs/bioseq_pend.py
 - gfn-pg/src/gfn/envs/bioseq.py
+- gfn-pg/src/gfn/envs/env.py
 
 - gfn-pg/src/gfn/containers/trajectories.py
 - gfn-pg/src/gfn/samplers/actions_samplers.py
@@ -42,4 +44,7 @@ This MIT license applies **only** to the following files:
 - gfn-pg/src/gfn/utils.py
 - gfn-pg/data_dag/scores/base_torch.py
 
-
+- gfn-pg/Config.py
+- gfn-pg/train.py
+- gfn-pg/train_G.py
+- gfn-pg/train_BN.py
