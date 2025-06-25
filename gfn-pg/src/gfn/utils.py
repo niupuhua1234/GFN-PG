@@ -182,7 +182,7 @@ def validate(
         elif isinstance(env,BioSeqPendEnv):
             final_states_dist_pmf = get_exact_P_T_bitpend(env, sampler)
         else:
-            raise ValueError("Environment Not suppoerted")
+            raise ValueError("Environment Not supported")
         if  isinstance(env,BitSeqEnv) or isinstance(env,BioSeqPendEnv):
             est_reward = (final_states_dist_pmf* env.log_reward(env.terminating_states).exp()).sum()
             validation_info["mean_diff"] =  (est_reward / env.mean_reward).clamp(0,1).item()
