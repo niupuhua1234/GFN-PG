@@ -107,7 +107,7 @@ class Oracle(ABC):
         super().__init__()
         self.alpha =alpha
         self.O_x = O_x#2*R-1
-        hamming =lambda x, idx: torch.abs(idx * (x - self.O)).sum(-1).min(-1)[0]
+        hamming =lambda x, idx: torch.abs(idx * (x - self.O_x)).sum(-1).min(-1)[0]
         self.hamming=vmap(hamming)
     def __call__(self, states: StatesTensor) -> BatchTensor:
         valid_masks= states!=-1
