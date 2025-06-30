@@ -41,7 +41,6 @@ class NeuralNet(nn.Module, GFNModule):
         output_dim: int,
         hidden_dim: Optional[int] = 256,
         n_hidden_layers: Optional[int] = 2,
-        torso: Optional[nn.Module] = None,
     ):
         """Implements a basic MLP.
 
