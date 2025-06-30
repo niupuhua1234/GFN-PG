@@ -14,7 +14,7 @@ parser = ArgumentParser(description='DAG-GFlowNet')
 parser.add_argument('--project', default='Hypergrid_RL_256_new')
 # Environment
 environment = parser.add_argument_group('Environment')
-environment.add_argument('--Env',default='HyperGrid', choices=['HyperGrid','DiscreteEBM','BayesianNetwork','TFbind8','qm9str','TFbind10','sehstr'])
+environment.add_argument('--Env',default='HyperGrid', choices=['HyperGrid'])
 environment.add_argument('--height',default=256,type=int)
 environment.add_argument('--ndim',default=2,type=int)
 environment.add_argument('--R0',default=0.01,type=float)
