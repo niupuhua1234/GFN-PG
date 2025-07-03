@@ -2,6 +2,7 @@ from typing import Dict, Optional
 
 import torch
 
+from src.gfn.containers.replay_buffer import Replay_x
 from src.gfn.containers import States, Trajectories, Transitions
 from src.gfn.samplers import TrajectoriesSampler,DiscreteActionsSampler
 from src.gfn.envs import Env,HyperGrid,DAG_BN,BitSeqEnv,BioSeqEnv,BioSeqPendEnv
