@@ -117,12 +117,10 @@ class Trajectories(Container):
         return states[~states.is_sink_state & ~states.is_initial_state]
     @property
     def is_sink_action(self):
-        return self.actions==-1
-    #assert self.states.is_sink_state[:-1].equal(self.actions == -1)
-    #assert self.states.is_initial_state[:-1].equal(self.actions == -1) if backward
+        return self.env.is_sink_actions(self.actions)
     @property
     def is_terminating_action(self):
-        return self.actions==self.env.n_actions-1
+        return self.env.is_exit_actions(self.actions)
 
     @property
     def log_rewards(self) -> FloatTensor1D | None:
