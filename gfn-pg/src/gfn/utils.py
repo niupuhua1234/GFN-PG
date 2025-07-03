@@ -152,7 +152,7 @@ def validate_dist(
     exact=False
 ) -> Dict[str, float]:
     """Evaluates the current parametrization on the given environment.
-    This is for environments with known target reward. The validation is done by computing the l1 distance between the
+    This is for environments with known target reward. The validation is done by computing the distance between the
     learned (empirical) and the target distributions.
 
     Args:
@@ -161,7 +161,7 @@ def validate_dist(
         n_validation_samples: The number of samples to use to evaluate the pmf.
 
     Returns:
-        Dict[str, float]: A dictionary containing the l1 validation metric. If the parametrization is a TBParametrization,
+        Dict[str, float]: A dictionary containing the validation metric. If the parametrization is a TBParametrization,
         i.e. contains LogZ, then the (absolute) difference between the learned and the target LogZ is also returned in the
         dictionary.
     """
@@ -207,10 +207,13 @@ def validate_mode(
 ) -> Dict[str, float]:
     validation_info = {}
     if isinstance(env,BitSeqEnv) or isinstance(env,BioSeqPendEnv):
-        trajectories = sampler.sample_T(n_trajectories=len(env.oracle.modes))
+        trajectories = sampler.sample_T(n_trajectories=len(env.oracle.modes))#tf8 256 qm 768 tf10 5000
         buffer.add( trajectories, env.log_reward(trajectories).exp())
         validation_info["num_modes"]= env.oracle.is_index_modes[torch.unique(buffer.x_index)].sum().item()
+        #validation_info["mean_diff"] = (env.replay_x.terminating_rewards[-50000:].mean() / env.mean_reward).clamp(0,1).item()
     return validation_info
+
+
 
 import networkx as nx
 from itertools import permutations, product,chain,combinations

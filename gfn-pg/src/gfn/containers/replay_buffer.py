@@ -12,12 +12,10 @@ class ReplayBuffer(ABC):
     def __init__(
         self,
         env: Env,
-        loss_fn: Loss | None = None,
         capacity: int = 1000,
     ):
         self.env = env
         self.capacity = capacity
-        self.loss_fn=loss_fn
         self._is_full = False
         self._index = 0
     def __repr__(self):

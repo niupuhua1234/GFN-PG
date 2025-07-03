@@ -11,7 +11,6 @@ from src.gfn.containers.states import States
 from src.gfn.envs.env import Env
 from src.gfn.envs.preprocessors import DictPreprocessor,IdentityPreprocessor
 import numpy as np
-
 # Typing
 TensorLong = TensorType["batch_shape", torch.long]
 TensorFloat = TensorType["batch_shape", torch.float]
@@ -56,7 +55,7 @@ class DAG_BN(Env):
         self.all_graphs=all_graphs
         self.all_indices={np.array2string(item,separator=','): idx for idx, item in enumerate(all_graphs.numpy())}
 
-        preprocessor = IdentityPreprocessor(output_shape=(n_dim**2,))  
+        preprocessor = IdentityPreprocessor(output_shape=(n_dim**2,))
         action_space = Discrete(self.n_dim ** 2 + 1)                   # all possible edges+stop action
 
         s0 = torch.zeros((n_dim*n_dim,), dtype=torch.long, device=torch.device(device_str))

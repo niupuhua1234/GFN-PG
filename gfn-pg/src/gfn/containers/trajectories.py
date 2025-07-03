@@ -196,6 +196,7 @@ class Trajectories(Container):
         """Returns a `States` object from the trajectories, containing all states in the trajectories"""
         states = self.states.flatten()
         return states[~states.is_sink_state]
+
     def to_device(self,device):
         self.states.states_tensor = self.states.states_tensor.to(device)
         self.actions = self.actions.to(device)

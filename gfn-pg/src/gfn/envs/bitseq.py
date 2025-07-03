@@ -22,7 +22,6 @@ def dec2bin(x, length):
     #length: bits seqence
     canonical_base = 2 ** torch.arange(length - 1, -1, -1).to(x.device, x.dtype)
     return x.unsqueeze(-1).bitwise_and(canonical_base).ne(0).float()
-
 def nbase2dec(n,b, length):
     #n:n_base b:bits
     canonical_base = n ** torch.arange(length - 1, -1, -1).to(b.device, b.dtype)
