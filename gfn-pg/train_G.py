@@ -94,7 +94,7 @@ for i in trange(args.n_iterations):
         to_log["B_loss"]= B_loss.item()
     #
     if args.use_wandb: wandb.log(to_log, step=i)
-    if (i+1) % args.validation_interval == 0 or i!=0:
+    if (i+1) % args.validation_interval == 0 and i!=0:
         validation_dist,_  = validate_dist(env, parametrization, trajectories_sampler,args.validation_samples,exact=True)
         validation_mode    = validate_mode(env,trajectories_sampler,replay_x)
         validation_info    = validation_dist | validation_mode
