@@ -207,10 +207,9 @@ def validate_mode(
 ) -> Dict[str, float]:
     validation_info = {}
     if isinstance(env,BitSeqEnv) or isinstance(env,BioSeqPendEnv):
-        trajectories = sampler.sample_T(n_trajectories=len(env.oracle.modes))#tf8 256 qm 768 tf10 5000
+        trajectories = sampler.sample_T(n_trajectories=len(env.oracle.modes))
         buffer.add( trajectories, env.log_reward(trajectories).exp())
         validation_info["num_modes"]= env.oracle.is_index_modes[torch.unique(buffer.x_index)].sum().item()
-        #validation_info["mean_diff"] = (env.replay_x.terminating_rewards[-50000:].mean() / env.mean_reward).clamp(0,1).item()
     return validation_info
 
 
