@@ -143,7 +143,7 @@ def get_exact_P_T_G(env, sampler):
 
     return u[index].view(-1).cpu()
 
-def validate(
+def validate_dist(
     env: Env,
     parametrization: Parametrization,
     sampler:TrajectoriesSampler,
@@ -203,6 +203,18 @@ def validate(
         #validation_info["mean_diff"] = (env.replay_x.terminating_rewards[-50000:].mean() / env.mean_reward).clamp(0,1).item()
         validation_info["num_modes"]= env.oracle.is_index_modes[torch.unique(env.replay_x.x_index)].sum().item()
     return validation_info, final_states_dist_pmf
+
+def validate_mode(
+    env: Env,
+    sampler:TrajectoriesSampler,
+    buffer: Replay_x,
+) -> Dict[str, float]:
+    validation_info = {}
+    if isinstance(env,BitSeqEnv) or isinstance(env,BioSeqPendEnv):
+        trajectories = sampler.sample_T(n_trajectories=len(env.oracle.modes))
+        buffer.add( trajectories, env.log_reward(trajectories).exp())
+        validation_info["num_modes"]= env.oracle.is_index_modes[torch.unique(buffer.x_index)].sum().item()
+    return validation_info
 
 import networkx as nx
 from itertools import permutations, product,chain,combinations
