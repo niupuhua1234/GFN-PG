@@ -198,11 +198,6 @@ def validate_dist(
     validation_info["Z_diff"] = abs((logZ.exp() - true_logZ.exp()).item())
     validation_info["logZ_diff"] = abs((logZ - true_logZ).item())
 
-    if hasattr(env, 'replay_x'):
-        trajectories = sampler.sample_T(n_trajectories=len(env.oracle.modes))#tf8 256 qm 768 tf10 5000
-        env.replay_x.add( trajectories, env.log_reward(trajectories).exp())
-        #validation_info["mean_diff"] = (env.replay_x.terminating_rewards[-50000:].mean() / env.mean_reward).clamp(0,1).item()
-        validation_info["num_modes"]= env.oracle.is_index_modes[torch.unique(env.replay_x.x_index)].sum().item()
     return validation_info, final_states_dist_pmf
 
 def validate_mode(
