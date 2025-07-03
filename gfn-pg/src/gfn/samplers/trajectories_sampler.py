@@ -150,7 +150,7 @@ class TrajectoriesSampler:
             step += 1
             trajectories_states[new_dones] = states.states_tensor[new_dones]
             states = new_states
-            print('\r','sampling step....No.'+str(step),end="")
+            #print('\r','sampling step....No.'+str(step),end="")
         return self.env.States(states_tensor=trajectories_states)
 
 
