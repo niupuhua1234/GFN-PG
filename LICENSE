@@ -38,12 +38,15 @@ This MIT license applies **only** to the following files:
 - gfn-pg/src/gfn/envs/env.py
 
 - gfn-pg/src/gfn/containers/trajectories.py
+- gfn-pg/src/gfn/containers/replay_buffer.py
+
 - gfn-pg/src/gfn/samplers/actions_samplers.py
 - gfn-pg/src/gfn/samplers/trajectories_sampler.py
 
-- gfn-pg/src/gfn/utils.py
 - gfn-pg/data_dag/scores/base.py
 - gfn-pg/data_dag/scores/base_torch.py
+
+- gfn-pg/src/gfn/utils.py
 
 - gfn-pg/Config.py
 - gfn-pg/train.py
