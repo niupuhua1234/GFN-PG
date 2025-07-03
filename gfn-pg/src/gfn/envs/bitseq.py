@@ -28,86 +28,12 @@ def nbase2dec(n,b, length):
     canonical_base = n ** torch.arange(length - 1, -1, -1).to(b.device, b.dtype)
     return torch.sum(canonical_base * b, -1)
 
-class Replay_x:# replay of index of terminating states
-    def __init__(self,nbase,ndim,capacity: int = int(1e10), ):
-        self.nbase=nbase
-        self.ndim=ndim
-        self.capacity = capacity
-        self._is_full = False
-        self._index = 0
-        self.x_index = torch.LongTensor(0)
-        self.x_rewards= torch.FloatTensor(0)
-    def __repr__(self):
-        return f"ReplayBuffer(capacity={self.capacity}, containing {len(self)} terminating states)"
-    def __len__(self):
-        return self.capacity if self._is_full else self._index
-    def add(self, x_states:States,rewards:TensorFloat):
-        to_add = len(x_states)
-        self._is_full |= self._index + to_add >= self.capacity
-        self._index = (self._index + to_add) % self.capacity
-        #
-        self.x_index=torch.cat(( self.x_index, nbase2dec(self.nbase,x_states.states_tensor.long(),self.ndim)))
-        self.x_rewards=torch.cat((self.x_rewards,rewards))
-        self.x_index =  self.x_index[-self.capacity:]
-        self.x_rewards =  self.x_rewards[-self.capacity:]
-
-class Replay_G(Replay_x):
-    def __init__(
-            self,nbase,ndim,capacity: int = int(1e6), ):
-        self.x_states = torch.LongTensor(0,ndim)
-        self.x_rewards= torch.FloatTensor(0)
-        super().__init__(nbase,ndim,capacity)
-        
-    def add(self, terminating_states:States,rewards:TensorFloat):
-        to_add = len(terminating_states)
-        self._is_full |= self._index + to_add >= self.capacity
-        self._index = (self._index + to_add) % self.capacity
-        #
-        self.x_states=torch.cat(( self.x_states,terminating_states.states_tensor))
-        self.x_rewards=torch.cat(( self.x_rewards,rewards))
-        self.x_states =  self.x_states[-self.capacity:]
-        self.x_rewards =  self.x_rewards[-self.capacity:]
-        #
-    def is_in_replay(self,states:States,valid_index):
-        valid_masks= states.states_tensor!=-1
-        state_index=torch.abs(valid_masks*
-                              (states.states_tensor-
-                               self.x_states[valid_index])).sum(-1)
-        return state_index==0
-    def scores_approx(self,state:States,nstate:States,valid_index):
-        valid_index= torch.full_like(self.x_rewards, fill_value=True,dtype=torch.bool) \
-            if valid_index is None else valid_index
-        new_index=valid_index.clone()
-        ##############################
-        state_index=self.is_in_replay(state,valid_index)
-        new_index[valid_index]=state_index
-        nstate_index=self.is_in_replay(nstate,new_index)
-        ##############################
-        scores_Z=self.x_rewards[valid_index][state_index].sum() \
-            if torch.any( state_index) else torch.tensor(1.)
-        scores=self.x_rewards[new_index][nstate_index].sum() \
-            if torch.any( nstate_index) else torch.tensor(0.)
-        return scores,scores_Z,new_index
-    def scores(self,state:States,nstate:States,state_list,valid_index):
-        valid_index= torch.full_like(self.x_rewards, fill_value=True,dtype=torch.bool) \
-            if valid_index is None else valid_index
-        new_index=valid_index.clone()
-        ##############################
-        state_index=self.is_in_replay(state,valid_index)
-        new_index[valid_index]=state_index
-        nstate_index=[self.is_in_replay(s,new_index) for s in nstate[state_list]]
-        ##############################
-        scores=torch.zeros(nstate.batch_shape,dtype=torch.float)
-        scores[state_list]=torch.stack([self.x_rewards[new_index][idx].mean()
-                if torch.any( idx) else torch.tensor(0.) for idx in nstate_index])
-        return scores,new_index
-
 class Oracle(ABC):
     def __init__(self, O_x: StatesTensor,alpha:float):
         super().__init__()
         self.alpha =alpha
         self.O_x = O_x#2*R-1
-        hamming =lambda x, idx: torch.abs(idx * (x - self.O_x)).sum(-1).min(-1)[0]
+        hamming =lambda x, idx: torch.abs(idx * (x - self.O)).sum(-1).min(-1)[0]
         self.hamming=vmap(hamming)
     def __call__(self, states: StatesTensor) -> BatchTensor:
         valid_masks= states!=-1

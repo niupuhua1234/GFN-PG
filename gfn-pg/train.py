@@ -2,8 +2,7 @@ import torch
 import wandb
 from datetime import  datetime
 from Config import Config,SamplerConfig
-from src.gfn.containers.replay_buffer import ReplayBuffer
-from src.gfn.utils import trajectories_to_training_samples, validate
+from src.gfn.utils import trajectories_to_training_samples, validate_dist
 
 
 from argparse import ArgumentParser
@@ -37,9 +36,6 @@ optimization.add_argument("--GFNModuleConfig",default={'module_name': "NeuralNet
 optimization.add_argument("--batch_size", type=int, default=128)
 optimization.add_argument("--n_iterations", type=int, default=2000)
 optimization.add_argument("--device_str",default='cpu',choices=['cpu','cuda'])
-# Replay buffer
-replay = parser.add_argument_group('Replay Buffer')
-replay.add_argument("--replay_buffer_size", type=int, default=0)
 # Miscellaneous
 misc = parser.add_argument_group('Miscellaneous')
 misc.add_argument("--use_wandb", type=bool, default=False)
@@ -54,10 +50,6 @@ env,parametrization,loss_fn=Config(args)
 print(loss_fn)
 #print(loss_fn.logit_PG)
 trajectories_sampler,B_trajectories_sampler=SamplerConfig(env,parametrization)
-if args.replay_buffer_size > 0 :
-    replay_buffer = ReplayBuffer(env, loss_fn, capacity=args.replay_buffer_size)
-else:
-    replay_buffer=  None
 
 if args.Loss not in ['TRPO','RL']:
     name=args.Loss+'-B' if args.PB_parameterized else args.Loss+'-U'
@@ -88,9 +80,7 @@ for i in trange(args.n_iterations):
     states_visited += len(trajectories)
     epsilon = args.epsilon_end + (epsilon - args.epsilon_end) * args.epsilon_decay
     trajectories_sampler.actions_sampler.epsilon = epsilon
-    #if replay_buffer is not None:
-    #     replay_buffer.add(training_samples)
-    #     training_samples = replay_buffer.sample(n_trajectories=args.batch_size)
+
     training_samples.to_device(args.device_str)
     loss=loss_fn.update_model(training_samples)
     to_log = {"loss": loss.item(), "states_visited": states_visited}
@@ -103,7 +93,7 @@ for i in trange(args.n_iterations):
     #
     if args.use_wandb: wandb.log(to_log, step=i)
     if (i+1) % args.validation_interval == 0 and i!=0:
-        validation_info,_ = validate(env, parametrization, trajectories_sampler,args.validation_samples,exact=True)
+        validation_info,_ = validate_dist(env, parametrization, trajectories_sampler,args.validation_samples,exact=True)
         if args.use_wandb:
             wandb.log(validation_info, step=i)
         to_log.update(validation_info)

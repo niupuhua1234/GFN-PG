@@ -16,7 +16,6 @@ BatchTensor = TensorType["batch_shape"]
 ForwardMasksTensor = TensorType["batch_shape", "n_actions", torch.bool]
 BackwardMasksTensor = TensorType["batch_shape", "n_actions - 1", torch.bool]
 from src.gfn.envs.bioseq import Oracle
-from src.gfn.envs.bitseq import Replay_x
 
 def nbase2dec(n,b, length):
     #n:n_base b:bits
@@ -56,7 +55,6 @@ class BioSeqPendEnv(Env):
         else:
             raise ValueError(f"Unknown preprocessor {preprocessor_name}")
 
-        self.replay_x = Replay_x(nbase=nbase, ndim=ndim)
         super().__init__(action_space=action_space,
                          bction_space=bction_space,
                          s0=s0, sf=sf,
