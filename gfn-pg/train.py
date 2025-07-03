@@ -27,7 +27,7 @@ optimization.add_argument("--epsilon_start",type=float,default=0.0)
 optimization.add_argument("--epsilon_end",type=float,default=0.0)
 # Optimization
 optimization = parser.add_argument_group('Optimization')
-optimization.add_argument('--Loss',default='RL', choices=['DB','TB','RL','TRPO','Sub_TB'])
+optimization.add_argument('--Loss',default='TB', choices=['DB','TB','RL','TRPO','Sub_TB'])
 optimization.add_argument("--seed", type=int, default=0)
 optimization.add_argument("--optim",default={'lr':0.001,'lr_Z':0.1,'lr_V':0.005})
 optimization.add_argument("--GFNModuleConfig",default={'module_name': "NeuralNet",
@@ -67,6 +67,7 @@ if args.use_wandb:
     wandb.config.update(encode(args))
 
 epsilon=args.epsilon_start
+temperature=1
 states_visited = 0
 for i in trange(args.n_iterations):
     # env.States.s0=env.States.s0.cpu()
@@ -78,8 +79,12 @@ for i in trange(args.n_iterations):
     training_samples = trajectories_to_training_samples(trajectories, loss_fn)
     training_last_states=training_samples.last_states
     states_visited += len(trajectories)
-    epsilon = args.epsilon_end + (epsilon - args.epsilon_end) * args.epsilon_decay
-    trajectories_sampler.actions_sampler.epsilon = epsilon
+    if args.Loss=='TTB':
+        temperature=1+(temperature-1)*0.99
+        trajectories_sampler.actions_sampler.temperature=temperature
+    else:
+        epsilon = args.epsilon_end + (epsilon - args.epsilon_end) * args.epsilon_decay
+        trajectories_sampler.actions_sampler.epsilon = epsilon
 
     training_samples.to_device(args.device_str)
     loss=loss_fn.update_model(training_samples)

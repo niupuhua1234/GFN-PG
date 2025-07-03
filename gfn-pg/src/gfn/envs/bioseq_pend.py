@@ -153,8 +153,6 @@ class BioSeqPendEnv(Env):
         first_states=torch.cartesian_prod(*[digits]).unsqueeze(-1)
         padding_states = - torch.ones(self.nbase, self.ndim - 1, dtype=torch.long)
         ordered_states.append(self.States(torch.cat([first_states,  padding_states],dim=-1)))
-
-
         if self.ndim>1:
             for i in range(2,self.ndim+1):
                 digit_states = torch.cartesian_prod(*[digits] * i)

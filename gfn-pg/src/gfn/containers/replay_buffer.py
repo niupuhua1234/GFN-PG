@@ -54,9 +54,6 @@ class  Replay_Traj(ReplayBuffer):
         self.training_objects = Trajectories(env)
     def __repr__(self):
         return f"ReplayBuffer(capacity={self.capacity}, containing {len(self)} trajectories)"
-    def __len__(self):
-        return self.capacity if self._is_full else self._index
-
     def add(self, training_objects: Trajectories):
         to_add = len(training_objects)
         self._is_full |= self._index + to_add >= self.capacity

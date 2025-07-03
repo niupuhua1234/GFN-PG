@@ -111,3 +111,4 @@ for i in trange(args.n_iterations):
             artifact.add_file('./scripts/{}_{}_logit_PF.pt'.format(name,i))
             wandb.log_artifact(artifact)
 if args.use_wandb: wandb.run.name=name+timestamp
+

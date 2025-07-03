@@ -36,18 +36,22 @@ def EnvConfig(args):
                       height=args.height,
                       R0=args.R0,R1=0.5,R2=2.0,
                       reward_cos=False)
+    elif args.Env=="DiscreteEBM":
+        env=BitSeqEnv(ndim=16,alpha=args.alpha)
     elif args.Env=="BayesianNetwork":
         scorer, data, graph = get_scorer(args)
-        #true_graph = torch.tensor(nx.to_numpy_array(graph, nodelist=sorted(graph.nodes), weight=None))
+        graph = torch.tensor(nx.to_numpy_array(graph, nodelist=sorted(graph.nodes), weight=None))
         all_graphs = torch.tensor(np.load('DAG-5-list.npy'))
-        env=DAG_BN(n_dim=5,all_graphs=all_graphs,score=scorer)
+        env=DAG_BN(n_dim=int(graph.shape[-1]),all_graphs=all_graphs,score=scorer)
     elif args.Env == "TFbind8":
         env = BioSeqEnv(ndim=8, nbase=4,
                         oracle_path='data_bio/tfbind8/tfbind8-exact-v0-all.pkl',
                         mode_path='data_bio/tfbind8/modes_tfbind8.pkl',alpha=3, R_max=10, R_min=1e-3,name="TFbind8")
+        #if args.PG_used: env.log_pg= torch.tensor(np.load('TF8_log_pg.npy'))
     elif args.Env == "qm9str":
         env = BioSeqEnv(ndim=5, nbase=11,
                         oracle_path='data_bio/qm9str/block_qm9str_v1_s5.pkl',alpha=5,R_max=10,R_min=1e-3,name="qm9str")
+        #if args.PG_used: env.log_pg= torch.tensor(np.load('qm9_log_pg.npy'))
     elif args.Env=="sehstr":
         env = BioSeqEnv(ndim=6, nbase=18,
                         oracle_path='data_bio/sehstr/block_18_stop6.pkl', alpha=6, R_max=10, R_min=1e-3,name="sehstr")
@@ -166,6 +170,8 @@ def Config(args):
         parametrization, loss=DBLossConfig(env,args)
     elif args.Loss == "TB":
         parametrization, loss = TBLossConfig(env,args)
+    elif args.Loss == "TTB":
+        parametrization, loss = TBLossConfig(env, args,)
     elif args.Loss == "Sub_TB":
         parametrization, loss= SubTBLossConfig(env,args)
     elif args.Loss == "RL":
