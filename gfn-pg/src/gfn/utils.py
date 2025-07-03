@@ -153,7 +153,7 @@ def validate_dist(
 ) -> Dict[str, float]:
     """Evaluates the current parametrization on the given environment.
     This is for environments with known target reward. The validation is done by computing the l1 distance between the
-    learned empirical and the target distributions.
+    learned (empirical) and the target distributions.
 
     Args:
         env: The environment to evaluate the parametrization on.
