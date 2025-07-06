@@ -227,7 +227,8 @@ class Trajectories(Container):
         new_states = self.env.sf.repeat(self.max_length+2, self.n_trajectories, 1) #+1 for s_0 in backward  traj + 1 for s_f in convetred forward traj
         new_when_is_done = self.when_is_done + 1                                   #+1 as s_0 is counted in forwardward
         for i in range(self.n_trajectories):
-            new_actions[: self.when_is_done[i], i] = self.actions[: self.when_is_done[i], i].flip(0)
+            new_actions[: self.when_is_done[i], i] = self.env.bction2action(self.states[ : self.when_is_done[i], i],
+                                                                            self.actions[: self.when_is_done[i], i]).flip(0)
             new_logps  [: self.when_is_done[i], i] = self.log_probs[: self.when_is_done[i],i].flip(0)
             new_actions[self.when_is_done[i], i] = (self.env.n_actions - 1)                  # add action  s->s_f with logprob=0
             new_states [: self.when_is_done[i] + 1, i] = self.states.states_tensor[: self.when_is_done[i] + 1, i].flip(0) #+1 to include s_0
