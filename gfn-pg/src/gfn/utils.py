@@ -1,7 +1,6 @@
-from typing import Dict, Optional
+from typing import Dict, Optional,Tuple
 
 import torch
-
 from src.gfn.containers.replay_buffer import Replay_x
 from src.gfn.containers import States, Trajectories, Transitions
 from src.gfn.samplers import TrajectoriesSampler,DiscreteActionsSampler
@@ -64,7 +63,7 @@ def get_exact_P_T_bitseq(env,sampler):
     """
     ordered_states_list = env.ordered_states_list
     probabilities = sampler.actions_sampler.get_probs(env.all_states)
-    u = torch.ones(size=env.all_states.batch_shape)
+    u = torch.ones(size=(probabilities.shape[0],))
     for i, states in enumerate(ordered_states_list[1:]):
         #print(i + 1)
         index = env.get_states_indices(states)
@@ -131,12 +130,11 @@ def get_exact_P_T_G(env, sampler):
     probabilities =torch.zeros(size=(env.n_states,env.action_space.n))
     probabilities[env.get_states_indices(env.all_states)]=sampler.actions_sampler.get_probs(env.all_states)
     u=torch.ones(size=env.all_states.batch_shape)
-
     for i,states in enumerate(ordered_states_list[1:]):
         #print(i+1)
         num_parent_state=states.backward_masks.sum(-1)[0].item()# =i+1 for bitseq =2 for bitppend
         index   =  env.get_states_indices(states)
-        parents = env.all_step(states, Backward=True)[states.backward_masks]
+        parents =  env.all_step(states, Backward=True)[states.backward_masks]
         actions_idx= env.bction2action( env.States(torch.repeat_interleave(states.states_tensor,2,dim=0)),
                                         torch.where(states.backward_masks)[1])#.tolist()
         parents_idx= env.get_states_indices(parents)
@@ -150,7 +148,7 @@ def validate_dist(
     sampler:TrajectoriesSampler,
     n_validation_samples: int = 1000,
     exact=False
-) -> Dict[str, float]:
+) -> Tuple[Dict[str, float], float]:
     """Evaluates the current parametrization on the given environment.
     This is for environments with known target reward. The validation is done by computing the distance between the
     learned (empirical) and the target distributions.
@@ -208,11 +206,9 @@ def validate_mode(
     validation_info = {}
     if isinstance(env,BitSeqEnv) or isinstance(env,BioSeqPendEnv):
         trajectories = sampler.sample_T(n_trajectories=len(env.oracle.modes))
-        buffer.add( trajectories, env.log_reward(trajectories).exp())
-        validation_info["num_modes"]= env.oracle.is_index_modes[torch.unique(buffer.x_index)].sum().item()
+        buffer.add( trajectories.states_tensor, env.log_reward(trajectories).exp())
+        validation_info["num_modes"]= env.oracle.is_mode(buffer.unique_states).sum().item()
     return validation_info
-
-
 
 import networkx as nx
 from itertools import permutations, product,chain,combinations

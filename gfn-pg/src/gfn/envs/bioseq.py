@@ -21,28 +21,26 @@ BackwardMasksTensor = TensorType["batch_shape", "n_actions - 1", torch.bool]
 from src.gfn.envs.bitseq import nbase2dec
 
 class Replay_G(ABC):
-    def __init__(self,
-                 nbase,
-                 ndim,
-                 capacity: int = int(1e6), ):
+    def __init__(self, nbase, ndim, capacity: int = int(1e6), ):
         self.nbase    = nbase
         self.ndim     = ndim
         self.capacity = capacity
         self._is_full = False
         self._index = 0
-        self.x_states = torch.LongTensor(0,ndim)
+        self.x_states = torch.LongTensor(0, ndim)
         self.x_rewards= torch.FloatTensor(0)
-    def add(self, terminating_states:States,rewards:TensorFloat):
-        to_add = len(terminating_states)
+
+    def add(self, x_states: States, rewards: TensorFloat):
+        to_add = len(x_states)
         self._is_full |= self._index + to_add >= self.capacity
         self._index = (self._index + to_add) % self.capacity
         #
-        self.x_states=torch.cat(( self.x_states,terminating_states.states_tensor))
-        self.x_rewards=torch.cat(( self.x_rewards,rewards))
-        self.x_states =  self.x_states[-self.capacity:]
-        self.x_rewards =  self.x_rewards[-self.capacity:]
+        self.x_states = torch.cat((self.x_states, x_states.states_tensor))
+        self.x_rewards= torch.cat((self.x_rewards, rewards))
+        self.x_states = self.x_states[-self.capacity:]
+        self.x_rewards= self.x_rewards[-self.capacity:]
         #
-    def is_in_replay(self,states:States,valid_index):
+    def is_in_replay(self, states: States, valid_index):
         valid_masks= states.states_tensor!=-1
         state_index=torch.abs(valid_masks*
                               (states.states_tensor-
@@ -58,9 +56,9 @@ class Replay_G(ABC):
         nstate_index=self.is_in_replay(nstate,new_index)
         ##############################
         scores_Z=self.x_rewards[valid_index][state_index].sum() \
-            if torch.any( state_index) else torch.tensor(1.)
+            if torch.any(state_index) else torch.tensor(1.)
         scores=self.x_rewards[new_index][nstate_index].sum() \
-            if torch.any( nstate_index) else torch.tensor(0.)
+            if torch.any(nstate_index) else torch.tensor(0.)
         return scores,scores_Z,new_index
     def scores(self,state:States,nstate:States,state_list,valid_index):
         valid_index= torch.full_like(self.x_rewards, fill_value=True,dtype=torch.bool) \
@@ -73,7 +71,7 @@ class Replay_G(ABC):
         ##############################
         scores=torch.zeros(nstate.batch_shape,dtype=torch.float)
         scores[state_list]=torch.stack([self.x_rewards[new_index][idx].mean()
-                if torch.any( idx) else torch.tensor(0.) for idx in nstate_index])
+                                        if torch.any(idx) else torch.tensor(0.) for idx in nstate_index])
         return scores,new_index
 class Oracle(ABC):
     def __init__(self, nbase,ndim,oracle_path,mode_path=None,reward_exp=3,reward_max=10.0,reward_min=1e-3,name="TFbind8"):
@@ -100,14 +98,17 @@ class Oracle(ABC):
         if mode_path is not None:
             with open(mode_path, 'rb') as f:
                 modes  = pickle.load(f)
-            self.modes = nbase2dec(nbase, torch.tensor(modes).long(), ndim)
+            self.modes =  torch.tensor(modes).long()
         else:
             num_modes = int(len(self.O_y) * 0.001) if name=="sehstr" else int(len(self.O_y) * 0.005) # .005 for qm9str
             sorted_index = torch.sort(self.O_y)[1]
-            self.modes   = sorted_index[-num_modes:]
-        self.is_index_modes=torch.full_like(self.O_y, fill_value=False, dtype=torch.bool)
-        self.is_index_modes[self.modes]=True
+            self.modes   = self.O_x(sorted_index[-num_modes:])
 
+    def is_mode(self,states: StatesTensor)-> BatchTensor:
+        modes    = nbase2dec(self.nbase, self.modes, self.ndim)
+        states   = nbase2dec(self.nbase,states.long(), self.ndim)
+        matched  = torch.isin(states,modes)
+        return  matched
     def __call__(self, states: StatesTensor)-> BatchTensor:
         self.O_y.to(states.device)
         states = nbase2dec(self.nbase,states.long(),self.ndim)
