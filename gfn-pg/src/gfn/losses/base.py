@@ -169,29 +169,6 @@ class TrajectoryDecomposableLoss(Sub_TrajectoryDecomposableLoss,ABC):
             non_exit_valid_actions = trajectories.actions[inter_index]
         return non_init_valid_states,non_exit_valid_actions,inter_index
 
-    def cumulative_logprobs(
-        self,
-        trajectories: Trajectories,
-        log_p_trajectories: LogPTrajectoriesTensor,
-    ):
-        """
-        Args:
-             trajectories: trajectories
-             log_p_trajectories: log probabilities of each transition in each trajectory
-        Return:
-            cumulative max_length+1 sums of log probabilities of each trajectory.
-
-        e.g. forward prob of forward traj:
-            Σ  log π|st  [ 0,        Σ(0:1)         ,....., Σ(0:3)     ,....., Σ(0:T) ,       Σ(0:f)   ].
-                           0, logp(τ_{0:1}|s_0),....., logp(τ_{0:3}|0) ,....., logp(τ_{0:T}|0),logp(τ_{0:f}|0)
-            backward prob of forward traj:
-            Σ  log π|st  [ 0,       Σ(0:1)     , ....,  Σ(0:3)         ,....., Σ(0:T),         ____________].
-                           0,  logp(τ_{0:1}|s_1),....., logp(τ_{0:3}|3),....., logp(τ_{0:T}|T), _____________
-
-        """
-        return torch.cat((torch.zeros(1, trajectories.n_trajectories, device=log_p_trajectories.device),
-                          log_p_trajectories.cumsum(dim=0),),dim=0)
-
     def get_pfs(
         self,
         trajectories: Trajectories) -> LogPTrajectoriesTensor:
@@ -225,6 +202,29 @@ class TrajectoryDecomposableLoss(Sub_TrajectoryDecomposableLoss,ABC):
         #log_pb_trajectories_all = torch.full_like(trajectories.states[:-1].backward_masks, fill_value=self.fill_value, dtype=torch.float)
         #log_pb_trajectories_all[inter_index] = valid_log_pb_all
         return log_pb_trajectories
+
+    def cumulative_logprobs(
+        self,
+        trajectories: Trajectories,
+        log_p_trajectories: LogPTrajectoriesTensor,
+    ):
+        """
+        Args:
+             trajectories: trajectories
+             log_p_trajectories: log probabilities of each transition in each trajectory
+        Return:
+            cumulative max_length+1 sums of log probabilities of each trajectory.
+
+        e.g. forward prob of forward traj:
+            Σ  log π|st  [ 0,        Σ(0:1)         ,....., Σ(0:3)     ,....., Σ(0:T) ,       Σ(0:f)   ].
+                           0, logp(τ_{0:1}|s_0),....., logp(τ_{0:3}|0) ,....., logp(τ_{0:T}|0),logp(τ_{0:f}|0)
+            backward prob of forward traj:
+            Σ  log π|st  [ 0,       Σ(0:1)     , ....,  Σ(0:3)         ,....., Σ(0:T),         ____________].
+                           0,  logp(τ_{0:1}|s_1),....., logp(τ_{0:3}|3),....., logp(τ_{0:T}|T), _____________
+
+        """
+        return torch.cat((torch.zeros(1, trajectories.n_trajectories, device=log_p_trajectories.device),
+                          log_p_trajectories.cumsum(dim=0),),dim=0)
 
 
 

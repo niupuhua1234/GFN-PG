@@ -98,21 +98,22 @@ class Oracle(ABC):
         if mode_path is not None:
             with open(mode_path, 'rb') as f:
                 modes  = pickle.load(f)
-            self.modes =  torch.tensor(modes).long()
+            self.modes = torch.tensor(modes).long()
         else:
-            num_modes = int(len(self.O_y) * 0.001) if name=="sehstr" else int(len(self.O_y) * 0.005) # .005 for qm9str
+            num_modes    = int(len(self.O_y) * 0.001) if name == "sehstr" else int(len(self.O_y) * 0.005) # .005 for qm9str
             sorted_index = torch.sort(self.O_y)[1]
             self.modes   = self.O_x(sorted_index[-num_modes:])
 
-    def is_mode(self,states: StatesTensor)-> BatchTensor:
+    def is_mode(self, states: StatesTensor)-> BatchTensor:
         modes    = nbase2dec(self.nbase, self.modes, self.ndim)
         states   = nbase2dec(self.nbase,states.long(), self.ndim)
         matched  = torch.isin(states,modes)
         return  matched
+
     def __call__(self, states: StatesTensor)-> BatchTensor:
         self.O_y.to(states.device)
         states = nbase2dec(self.nbase,states.long(),self.ndim)
-        reward=self.O_y[states]
+        reward = self.O_y[states]
         return reward
 
 class BioSeqEnv(BitSeqEnv,Env):
@@ -129,7 +130,7 @@ class BioSeqEnv(BitSeqEnv,Env):
         nbase=4,
         name="TFbind8"
     ):
-        """Discrete Sequence environment.
+        """Discrete Graded Sequence environment.
 
         Args:
             nbase(int, optional): number   N of  integer set  {0,1,.....N}

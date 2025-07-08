@@ -96,10 +96,10 @@ class TrajectoriesSampler:
             states=self.env.States(states_tensor=torch.stack(trajectories_states, dim=0),
                                    forward_masks=torch.stack(trajectories_fmasks,dim=0),
                                    backward_masks=torch.stack(trajectories_bmasks, dim=0)), # to simplifyied
-            actions=torch.stack(trajectories_actions, dim=0) if trajectories_actions !=[] else [],
+            actions=torch.stack(trajectories_actions, dim=0) if trajectories_actions !=[] else None,
             when_is_done=trajectories_dones,
             is_backward=self.is_backward,
-            log_probs=torch.stack(trajectories_logprobs, dim=0) if trajectories_logprobs !=[] else [],
+            log_probs=torch.stack(trajectories_logprobs, dim=0) if trajectories_logprobs !=[] else None,
             )
 
         return trajectories

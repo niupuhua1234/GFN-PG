@@ -65,14 +65,12 @@ class Trajectory_TRPO(TrajectoryRL):
         sur_loss=self.surrogate_loss(log_pf,log_pf,advantages[valid_index]).sum(0)/n_traj #
         KL        = self.kl_log_prob(log_pf_all,log_pf_all).sum(0)/n_traj # value is zero, used for Hessian computation at theta_old
 
-        sur_grads = self.flat_grad(sur_loss, params,retain_graph=True)  # v
+        sur_grads = self.flat_grad(sur_loss, params,retain_graph=True)
         kl_grads  = self.flat_grad(KL, params, create_graph=True)       # Create graph, because we will call backward on it (for HVP)
         Hvp       = lambda v:self.flat_grad(kl_grads @ v, params, retain_graph=True)
         search_dir = self.conjugate_gradients(Hvp,sur_grads, n_iter=10) # Hv->inv(H)v
 
         max_length = torch.sqrt(2 * delta / search_dir.dot(sur_grads))  # vT·inv(H)v
-        #v_invH_v=search_dir.dot(Hvp(search_dir))                       # vT·inv(H)v,  Hvp(search_dir)=H·inv(H)·v=v
-        #max_length = torch.sqrt(2 * delta /v_invH_v)
         max_step = max_length * search_dir
 
         flatten_params = self.flatten(params)

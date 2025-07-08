@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import ClassVar, Literal, Tuple, cast,List
-import copy, pickle
-import  os
+
 import torch
 from gymnasium.spaces import Discrete
 from torchtyping import TensorType
@@ -36,6 +35,14 @@ class BioSeqPendEnv(Env):
         nbase=4,
         name="TFbind8"
     ):
+        """Discrete Sequence Graded environment with 2*nbase actions.
+
+        Args:
+            nbase(int, optional): number   N of  integer set  {0,1,.....N}
+            ndim (int, optional): dimension D of the sampling space {0,1,...,N}^D.
+            alpha (float, optional): scaling factor for oracle. Defaults to 1.0.
+            device_str (str, optional): "cpu" or "cuda". Defaults to "cpu".
+        """
         self.ndim = ndim
         self.nbase = nbase
         s0 = torch.full((ndim,), -1, dtype=torch.long, device=torch.device(device_str))
@@ -47,8 +54,9 @@ class BioSeqPendEnv(Env):
         bction_space = Discrete(2)
         # the last action is the exit action that is only available for complete states
         # Action  i ∈ [0, nbase - 1]  corresponds to append s with i,
-        # Action  i ∈ [nbase, 2base-1] corresponds tp prepend s with i
-        # Bction =0                   corresponds tp de-append digits, i.e. remove the last digit
+        # Action  i ∈ [nbase, 2base-1] corresponds to prepend s with i
+        # Action 2nbase               corresponds to action (s->sf)
+        # Bction =0                   corresponds to de-append digits, i.e. remove the last digit
         # Bction =1                  corresponds to de-prepend digits, i.e. remove the first digit
         if preprocessor_name == "KHot":
             preprocessor = KHotPreprocessor(height=nbase, ndim=ndim,fill_value=-1)
@@ -139,7 +147,7 @@ class BioSeqPendEnv(Env):
 
     @property
     def n_states(self) -> int:
-        return sum([self.nbase**(i+1) for i in range(self.ndim)])+1
+        return sum([self.nbase**i for i in range(self.ndim+1)])
 
     @property
     def n_terminating_states(self) -> int:

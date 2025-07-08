@@ -125,12 +125,6 @@ class BitSeqEnv(Env):
         sources= torch.fmod(actions, self.ndim)                         #  sources: state element index
         return states.scatter_(-1, sources.unsqueeze(-1), -1)           #  target: -1
 
-
-    def log_reward(self, final_states: States) -> BatchTensor:
-        raw_states = final_states.states_tensor
-        canonical =  raw_states#2 * raw_states - 1
-        return self.oracle(canonical)
-
     def get_states_indices(self, states: States) -> BatchTensor:
         """The chosen encoding is the following: -1 -> 0, 0 -> 1, 1 -> 2,.... then we convert to base 5"""
         return nbase2dec(self.nbase+1, states.states_tensor+1,self.ndim).long().cpu().tolist()
@@ -178,6 +172,11 @@ class BitSeqEnv(Env):
         digits = torch.arange(self.nbase, device=self.device)
         all_states = torch.cartesian_prod(*[digits] * self.ndim)
         return self.States(all_states)
+
+    def log_reward(self, final_states: States) -> BatchTensor:
+        raw_states = final_states.states_tensor
+        canonical =  raw_states#2 * raw_states - 1
+        return self.oracle(canonical)
 
     @property
     def true_dist_pmf(self) -> torch.Tensor:
