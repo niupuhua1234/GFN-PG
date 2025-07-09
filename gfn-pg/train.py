@@ -67,7 +67,6 @@ if args.use_wandb:
     wandb.config.update(encode(args))
 
 epsilon=args.epsilon_start
-temperature=1
 states_visited = 0
 for i in trange(args.n_iterations):
     trajectories = trajectories_sampler.sample(n_trajectories=args.batch_size)

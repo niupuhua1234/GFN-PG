@@ -63,7 +63,7 @@ def get_exact_P_T_bitseq(env,sampler):
     """
     ordered_states_list = env.ordered_states_list
     probabilities = sampler.actions_sampler.get_probs(env.all_states)
-    u = torch.ones(size=(probabilities.shape[0],),)
+    u = torch.ones(size=(probabilities.shape[0],))
     for i, states in enumerate(ordered_states_list[1:]):
         #print(i + 1)
         index = env.get_states_indices(states)
@@ -185,7 +185,7 @@ def validate_dist(
         else:
             raise ValueError("Environment Not supported")
         if  isinstance(env,BitSeqEnv) or isinstance(env,BioSeqPendEnv):
-            est_reward = (final_states_dist_pmf* env.log_reward(env.terminating_states).exp().cpu()).sum()
+            est_reward = (final_states_dist_pmf* env.log_reward(env.terminating_states).exp()).sum()
             validation_info["mean_diff"] =  (est_reward / env.mean_reward).clamp(0,1).item()
         validation_info["l1_dist"]= 0.5*torch.abs(final_states_dist_pmf - true_dist_pmf).sum().item()
         validation_info["JSD"]= JSD(final_states_dist_pmf,true_dist_pmf).item()

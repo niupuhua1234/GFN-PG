@@ -41,7 +41,7 @@ optimization.add_argument("--GFNModuleConfig",default={'module_name': "NeuralNet
                                                     'hidden_dim': 256})
 optimization.add_argument("--batch_size", type=int, default=128)
 optimization.add_argument("--n_iterations", type=int, default=2000)
-optimization.add_argument("--device_str",default='cuda',choices=['cpu','cuda'])
+optimization.add_argument("--device_str",default='cpu',choices=['cpu','cuda'])
 # Miscellaneous
 misc = parser.add_argument_group('Miscellaneous')
 misc.add_argument("--use_wandb", type=bool, default=False)
