@@ -71,11 +71,6 @@ if args.use_wandb:
 epsilon=args.epsilon_start
 states_visited = 0
 for i in trange(args.n_iterations):
-    # env.States.s0=env.States.s0.cpu()
-    # env.States.sf=env.States.sf.cpu()
-    # env.s0=env.States.s0.cpu()
-    # env.sf=env.States.sf.cpu()
-    # env.device=torch.device('cpu')
     trajectories = trajectories_sampler.sample(n_trajectories=args.batch_size)
     training_samples = trajectories_to_training_samples(trajectories, loss_fn)
     training_last_states=training_samples.last_states
@@ -92,7 +87,6 @@ for i in trange(args.n_iterations):
         B_training_samples.to_device(args.device_str)
         B_loss = loss_fn.B_update_model(B_training_samples)
         to_log["B_loss"]= B_loss.item()
-    #
     if args.use_wandb: wandb.log(to_log, step=i)
     if (i+1) % args.validation_interval == 0 and i!=0:
         validation_dist,_  = validate_dist(env, parametrization, trajectories_sampler,args.validation_samples,exact=True)
@@ -109,3 +103,4 @@ for i in trange(args.n_iterations):
             artifact.add_file('./scripts/{}_{}_logit_PF.pt'.format(name,i))
             wandb.log_artifact(artifact)
 if args.use_wandb: wandb.run.name=name+timestamp
+

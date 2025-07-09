@@ -82,6 +82,11 @@ class States(Container, ABC):
         else:
             self.forward_masks,self.backward_masks = forward_masks,backward_masks
 
+    def to_device(self,device:str):
+        for key, val in self.__dict__.items():
+            if isinstance(val, torch.Tensor):
+                self.__setattr__(key, self.__getattribute__(key).to(device))
+
     #可以在不实例化的情形下访问该方法， 相当于一种实例化操作的装饰
     @classmethod
     def from_batch_shape(cls, batch_shape: tuple[int], random: bool = False) -> States:

@@ -40,7 +40,7 @@ def EnvConfig(args):
         scorer, data, graph = get_scorer(args)
         graph = torch.tensor(nx.to_numpy_array(graph, nodelist=sorted(graph.nodes), weight=None))
         all_graphs = torch.tensor(np.load('DAG-5-list.npy'))
-        env=DAG_BN(n_dim=int(graph.shape[-1]),all_graphs=all_graphs,score=scorer)
+        env=DAG_BN(n_dim=int(graph.shape[-1]),all_graphs=all_graphs,score=scorer,device_str=args.device_str)
     elif args.Env == "TFbind8":
         env = BioSeqEnv(ndim=8, nbase=4,
                         oracle_path='data_bio/tfbind8/tfbind8-exact-v0-all.pkl',

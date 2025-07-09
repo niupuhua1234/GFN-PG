@@ -140,10 +140,10 @@ class BioSeqPendEnv(Env):
 
     def get_states_indices(self, states: States) -> BatchTensor:
         """The chosen encoding is the following: -1 -> 0, 0 -> 1, 1 -> 2,.... then we nbase-1 convert to nbase """
-        return nbase2dec(self.nbase, states.states_tensor+1,self.ndim).long().cpu().tolist()
+        return nbase2dec(self.nbase, states.states_tensor+1,self.ndim).long().cpu()
 
     def get_terminating_states_indices(self, states: States) -> BatchTensor:
-        return nbase2dec(self.nbase, states.states_tensor,self.ndim).long().cpu().tolist()
+        return nbase2dec(self.nbase, states.states_tensor,self.ndim).long().cpu()
 
     @property
     def n_states(self) -> int:

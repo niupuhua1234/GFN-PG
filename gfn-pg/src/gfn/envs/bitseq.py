@@ -102,7 +102,7 @@ class BitSeqEnv(Env):
                 forward_masks[..., -1] =  (self.states_tensor != -1).all(dim=-1)
                 #######################
                 backward_masks = self.states_tensor.repeat(rep_dims) == \
-                                 torch.arange(0, env.nbase, 1).repeat_interleave(env.ndim)
+                                 torch.arange(0, env.nbase, 1,device=env.device).repeat_interleave(env.ndim)
                 return forward_masks, backward_masks
 
             def update_masks(self,action=None,index=None) -> None:
@@ -111,7 +111,7 @@ class BitSeqEnv(Env):
                 self.forward_masks[..., -1] = (self.states_tensor != -1).all(dim=-1)          #when all logits are filled, we can terminating the generating process by s_f
                 #######
                 self.backward_masks=self.states_tensor.repeat(rep_dims) == \
-                                    torch.arange(0, env.nbase, 1).repeat_interleave(env.ndim)  # logit are filled by i=0,..,nbase-1,
+                                    torch.arange(0, env.nbase, 1,device=env.device).repeat_interleave(env.ndim)  # logit are filled by i=0,..,nbase-1,
                                                                                                # we can take backward actions to remove i and denote the empty logit -1
         return BitSeqStates
 
@@ -127,10 +127,10 @@ class BitSeqEnv(Env):
 
     def get_states_indices(self, states: States) -> BatchTensor:
         """The chosen encoding is the following: -1 -> 0, 0 -> 1, 1 -> 2,.... then we convert to base 5"""
-        return nbase2dec(self.nbase+1, states.states_tensor+1,self.ndim).long().cpu().tolist()
+        return nbase2dec(self.nbase+1, states.states_tensor+1,self.ndim).long().cpu()
 
     def get_terminating_states_indices(self, states: States) -> BatchTensor:
-        return nbase2dec(self.nbase, states.states_tensor,self.ndim).long().cpu().tolist()
+        return nbase2dec(self.nbase, states.states_tensor,self.ndim).long().cpu()
 
     @property
     def n_states(self) -> int:

@@ -48,6 +48,12 @@ class Env(ABC):
         self.States = self.make_States_class()
         self.preprocessor = preprocessor if preprocessor is not None else IdentityPreprocessor(output_shape=(s0.shape))
 
+    def to_device(self,device:str):
+        self.s0=self.s0.to(device)
+        self.sf=self.sf.to(device)
+        self.States.s0=self.States.s0.to(device)
+        self.States.sf=self.States.sf.to(device)
+        self.device=torch.device(device)
     @abstractmethod
     def make_States_class(self) -> type[States]:
         "Returns a class that inherits from States and implements the environment-specific methods."

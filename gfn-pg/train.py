@@ -67,13 +67,9 @@ if args.use_wandb:
     wandb.config.update(encode(args))
 
 epsilon=args.epsilon_start
+temperature=1
 states_visited = 0
 for i in trange(args.n_iterations):
-    # env.States.s0=env.States.s0.cpu()
-    # env.States.sf=env.States.sf.cpu()
-    # env.s0=env.States.s0.cpu()
-    # env.sf=env.States.sf.cpu()
-    # env.device=torch.device('cpu')
     trajectories = trajectories_sampler.sample(n_trajectories=args.batch_size)
     training_samples = trajectories_to_training_samples(trajectories, loss_fn)
     training_last_states=training_samples.last_states

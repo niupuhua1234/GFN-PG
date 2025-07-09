@@ -41,7 +41,7 @@ optimization.add_argument("--GFNModuleConfig",default={'module_name': "NeuralNet
                                                     'hidden_dim': 256})
 optimization.add_argument("--batch_size", type=int, default=128)
 optimization.add_argument("--n_iterations", type=int, default=2000)
-optimization.add_argument("--device_str",default='cpu',choices=['cpu','cuda'])
+optimization.add_argument("--device_str",default='cuda',choices=['cpu','cuda'])
 # Miscellaneous
 misc = parser.add_argument_group('Miscellaneous')
 misc.add_argument("--use_wandb", type=bool, default=False)
@@ -75,11 +75,6 @@ if args.use_wandb:
 epsilon=args.epsilon_start
 states_visited = 0
 for i in trange(args.n_iterations):
-    # env.States.s0=env.States.s0.cpu()
-    # env.States.sf=env.States.sf.cpu()
-    # env.s0=env.States.s0.cpu()
-    # env.sf=env.States.sf.cpu()
-    # env.device=torch.device('cpu')
     trajectories = trajectories_sampler.sample(n_trajectories=args.batch_size)
     training_samples = trajectories_to_training_samples(trajectories, loss_fn)
     training_last_states=training_samples.last_states

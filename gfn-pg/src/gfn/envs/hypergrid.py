@@ -147,7 +147,7 @@ class HyperGrid(Env):
     def get_states_indices(self, states: States):
         states_raw = states.states_tensor
         canonical_base = self.height ** torch.arange(self.ndim - 1, -1, -1, device=states_raw.device)
-        return (canonical_base * states_raw).sum(-1).long().cpu().tolist()
+        return (canonical_base * states_raw).sum(-1).long().cpu()
 
     def get_terminating_states_indices(self, states: States):
         return self.get_states_indices(states)

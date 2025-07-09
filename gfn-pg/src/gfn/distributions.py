@@ -35,7 +35,7 @@ class Empirical_Dist(TerminatingStatesDist):
 
     def pmf(self,states) -> TensorPmf:
         assert len(states.batch_shape) == 1, "States should be a linear batch of states"
-        states_indices = self.states_to_indices(states)
+        states_indices = self.states_to_indices(states).tolist()
         counter = Counter(states_indices)
         counter_list = [counter[state_idx] if state_idx in counter else 0
                         for state_idx in range(self.env_n_terminating_states)]

@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Sequence
 
+from src.gfn.envs import Env
 if TYPE_CHECKING:
-    from src.gfn.envs import Env
     from src.gfn.containers.states import States
 
 import torch
@@ -198,10 +198,12 @@ class Trajectories(Container):
         return states[~states.is_sink_state]
 
     def to_device(self,device):
-        self.states.states_tensor = self.states.states_tensor.to(device)
-        self.actions = self.actions.to(device)
-        self.states.forward_masks = self.states.forward_masks.to(device)
-        self.states.backward_masks = self.states.backward_masks.to(device)
+        for key, val in self.__dict__.items():
+            if isinstance(val, Container):
+                self.__getattribute__(key).to_device(device)
+            elif isinstance(val, torch.Tensor):
+                self.__setattr__(key, self.__getattribute__(key).to(device))
+
     def revert_backward_trajectories(self) -> Trajectories:
         """
         Return a forward trajectories from a backward trajectories
@@ -221,8 +223,8 @@ class Trajectories(Container):
         """
         assert self.is_backward
 
-        new_actions=torch.full((self.max_length+1,self.n_trajectories),-1, dtype=torch.long)
-        new_logps=torch.full((self.max_length+1,self.n_trajectories),0., dtype=torch.float)
+        new_actions=torch.full((self.max_length+1,self.n_trajectories),-1, dtype=torch.long,device=self.actions.device)
+        new_logps=torch.full((self.max_length+1,self.n_trajectories),0., dtype=torch.float,device=self.log_probs.device)
 
         new_states = self.env.sf.repeat(self.max_length+2, self.n_trajectories, 1) #+1 for s_0 in backward  traj + 1 for s_f in convetred forward traj
         new_when_is_done = self.when_is_done + 1                                   #+1 as s_0 is counted in forwardward

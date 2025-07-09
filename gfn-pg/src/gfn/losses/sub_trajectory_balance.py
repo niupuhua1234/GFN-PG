@@ -27,7 +27,7 @@ class SubTrajectoryBalance(TrajectoryDecomposableLoss):
         optimizer: torch.optim.Optimizer,
         log_reward_clip_min: float = -12,
         weighing: Literal["DB","ModifiedDB","TB",
-                          "geometric","equal","geometric_within","equal_within"] = "geometric_within",
+                          "geometric","equal","geometric_within","equal_within"] = "equal_within",
         lamda: float = 0.9,
     ):
         """
@@ -135,12 +135,12 @@ class SubTrajectoryBalance(TrajectoryDecomposableLoss):
             contributions = contributions.repeat(n_rows, 1)
         elif self.weighing == "equal":
             n_sub_trajectories = int((trajectories.when_is_done * (trajectories.when_is_done + 1) / 2).sum().item())
-            contributions = torch.ones(n_rows, len(trajectories)) / n_sub_trajectories
+            contributions = torch.ones(n_rows, len(trajectories),device=trajectories.env.device) / n_sub_trajectories
         elif self.weighing == "geometric_within":
             # the following tensor represents the weights given to each possible sub-trajectory length
-            contributions = (self.lamda ** torch.arange(trajectories.max_length).double()).float()
+            contributions = (self.lamda ** torch.arange(trajectories.max_length,device=trajectories.env.device).double()).float()
             contributions = contributions.unsqueeze(-1).repeat(1, len(trajectories))
-            contributions = contributions.repeat_interleave(torch.arange(trajectories.max_length, 0, -1),dim=0,
+            contributions = contributions.repeat_interleave(torch.arange(trajectories.max_length, 0, -1,device=trajectories.env.device),dim=0,
                                                             output_size=int(trajectories.max_length * (trajectories.max_length + 1) / 2))
             r"""
             Now we need to divide each column by n + (n-1) lambda +...+ 1*lambda^{n-1}

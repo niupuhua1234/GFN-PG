@@ -57,7 +57,7 @@ class TrajectoryRL(TrajectoryDecomposableLoss):
             logits = self.parametrization.logit_PF(valid_states)
         if torch.any(torch.all(torch.isnan(logits), 1)): raise ValueError("NaNs in estimator")
         logits[~valid_states.forward_masks] = self.inf_value
-        low_states_index = ~(self.env.log_reward(valid_states) > torch.tensor(75.))
+        low_states_index = ~(self.env.log_reward(valid_states) > torch.tensor(75.,device=valid_states.device))
         logits[low_states_index, -1] = logits[low_states_index,-1].min(torch.tensor(1e-10).log())#self.inf_value
         #
         log_pg_all = logits.log_softmax(dim=-1)
@@ -74,7 +74,7 @@ class TrajectoryRL(TrajectoryDecomposableLoss):
             logits=self.parametrization.logit_PF(valid_states)
         if torch.any(torch.all(torch.isnan(logits), 1)): raise ValueError("NaNs in estimator")
         logits[~valid_states.forward_masks] = self.inf_value
-        low_states_index = ~(self.env.log_reward(valid_states) > torch.tensor([self.env.R0]).log())
+        low_states_index = ~(self.env.log_reward(valid_states) > torch.tensor([self.env.R0],device=valid_states.device).log())
         logits[low_states_index, -1] = logits[low_states_index, -1].min(torch.tensor(1e-5).log())#self.inf_value
         #
         log_pg_all = logits.log_softmax(dim=-1)
@@ -88,6 +88,8 @@ class TrajectoryRL(TrajectoryDecomposableLoss):
         return NotImplementedError("The environment does not support guided distribution")
 
     def BioSeqEnv_approx(self,trajectories:Trajectories):
+        device=trajectories.env.device
+        trajectories.to_device('cpu')
         if hasattr(self.env,'replay_G'):
             backward=trajectories.is_backward
             self.env.replay_G.add(trajectories.states[0] if backward else trajectories.last_states,
@@ -108,9 +110,12 @@ class TrajectoryRL(TrajectoryDecomposableLoss):
                             log_pg_traj[order,batch]=(scores/scores_Z).log().maximum(torch.tensor(self.inf_value))
         else:
             log_pg_traj=trajectories.log_probs
-        return log_pg_traj
+        trajectories.to_device(device)
+        return log_pg_traj.to(device)
 
     def BioSeqEnv(self,trajectories:Trajectories):
+        device=trajectories.actions.device
+        trajectories.to_device('cpu')
         if hasattr(self.env,'replay_G'):
             backward=trajectories.is_backward
             last_states=trajectories.states[0] if backward else trajectories.last_states
@@ -134,7 +139,8 @@ class TrajectoryRL(TrajectoryDecomposableLoss):
                             log_pg_traj[order,batch]=(scores[actions]/scores.sum()).log().maximum(torch.tensor(self.inf_value))
         else:
             log_pg_traj=trajectories.log_probs
-        return log_pg_traj
+        trajectories.to_device(device)
+        return log_pg_traj.to(device)
 
     def get_pgs(self,trajectories: Trajectories) -> LogPTrajectoriesTensor:
         return self.__getattribute__(self.env.__class__.__name__)(trajectories)

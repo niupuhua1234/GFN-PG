@@ -50,7 +50,7 @@ class DAG_BN(Env):
         self.n_dim=n_dim
         self.max_parents = max_parents or self.n_dim# min( , )
         self.max_edges = self.n_dim * (self.n_dim - 1) // 2 # dag edge limite
-        self.zero_score=score(torch.zeros(self.n_dim**2))
+        self.zero_score=score(torch.zeros(self.n_dim**2)).item()
         self.score=score
         self.all_graphs=all_graphs
         self.all_indices={np.array2string(item,separator=','): idx for idx, item in enumerate(all_graphs.numpy())}
@@ -106,7 +106,7 @@ class DAG_BN(Env):
                     for i in range(env.n_dim):
                         for j in range(env.n_dim):
                             reach[...,i,j]= reach[...,i,j] | ( reach[...,i,k] & reach[...,k,j])
-                return (reach | torch.eye(env.n_dim, dtype=torch.bool)).reshape(*adjacency.shape[0:-1],env.n_dim**2)
+                return (reach | torch.eye(env.n_dim, dtype=torch.bool,device=env.device)).reshape(*adjacency.shape[0:-1],env.n_dim**2)
 
             def make_masks(self) -> Tuple[ForwardMasksTensor, BackwardMasksTensor]:
                 "Mask illegal (forward and backward) actions."

@@ -63,7 +63,7 @@ def get_exact_P_T_bitseq(env,sampler):
     """
     ordered_states_list = env.ordered_states_list
     probabilities = sampler.actions_sampler.get_probs(env.all_states)
-    u = torch.ones(size=(probabilities.shape[0],))
+    u = torch.ones(size=(probabilities.shape[0],),)
     for i, states in enumerate(ordered_states_list[1:]):
         #print(i + 1)
         index = env.get_states_indices(states)
@@ -164,6 +164,8 @@ def validate_dist(
         dictionary.
     """
     validation_info= {}
+    device=env.device
+    env.to_device('cpu')
     if not exact:
         trajectories = sampler.sample_T(n_trajectories=n_validation_samples)
         final_states_dist= Empirical_Dist(env)
@@ -183,7 +185,7 @@ def validate_dist(
         else:
             raise ValueError("Environment Not supported")
         if  isinstance(env,BitSeqEnv) or isinstance(env,BioSeqPendEnv):
-            est_reward = (final_states_dist_pmf* env.log_reward(env.terminating_states).exp()).sum()
+            est_reward = (final_states_dist_pmf* env.log_reward(env.terminating_states).exp().cpu()).sum()
             validation_info["mean_diff"] =  (est_reward / env.mean_reward).clamp(0,1).item()
         validation_info["l1_dist"]= 0.5*torch.abs(final_states_dist_pmf - true_dist_pmf).sum().item()
         validation_info["JSD"]= JSD(final_states_dist_pmf,true_dist_pmf).item()
@@ -195,7 +197,7 @@ def validate_dist(
         logZ= parametrization.logF(env.States(env.s0))
     validation_info["Z_diff"] = abs((logZ.exp() - true_logZ.exp()).item())
     validation_info["logZ_diff"] = abs((logZ - true_logZ).item())
-
+    env.to_device(device)
     return validation_info, final_states_dist_pmf
 
 def validate_mode(
@@ -204,10 +206,14 @@ def validate_mode(
     buffer: Replay_x,
 ) -> Dict[str, float]:
     validation_info = {}
+    device=env.device
+    env.to_device('cpu')
     if isinstance(env,BitSeqEnv) or isinstance(env,BioSeqPendEnv):
-        trajectories = sampler.sample_T(n_trajectories=len(env.oracle.modes))
+        trajectories = sampler.sample_T(n_trajectories=len(env.oracle.modes))#tf8 256 qm 768 tf10 5000
         buffer.add( trajectories.states_tensor, env.log_reward(trajectories).exp())
         validation_info["num_modes"]= env.oracle.is_mode(buffer.unique_states).sum().item()
+        #validation_info["mean_diff"] = (env.replay_x.terminating_rewards[-50000:].mean() / env.mean_reward).clamp(0,1).item()
+    env.to_device(device)
     return validation_info
 
 import networkx as nx
