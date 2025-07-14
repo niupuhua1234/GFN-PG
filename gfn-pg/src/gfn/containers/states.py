@@ -217,7 +217,7 @@ class States(Container, ABC):
         Returns:
             DonesTensor: Tensor of booleans indicating whether the states are equal to the states in self.
         """
-        out = self.states_tensor == other
+        out = self.states_tensor == other.to(self.device)
         state_ndim = len(self.__class__.state_shape)
         for _ in range(state_ndim):
             out = out.all(dim=-1) # recursive checking from last state_axis to the first state_axis

@@ -148,11 +148,8 @@ class Transitions(Container):
         self.next_states.extend(other.next_states)
         self.log_probs = torch.cat((self.log_probs, other.log_probs), dim=0)
     def to_device(self,device):
-        self.states.states_tensor=self.states.states_tensor.to(device)
-        self.states.forward_masks=self.states.forward_masks.to(device)
-        self.states.backward_masks=self.states.backward_masks.to(device)
-        self.actions=self.actions.to(device)
-
-        self.next_states.states_tensor=self.next_states.states_tensor.to(device)
-        self.next_states.forward_masks=self.next_states.forward_masks.to(device)
-        self.next_states.backward_masks=self.next_states.backward_masks.to(device)
+        for key, val in self.__dict__.items():
+            if isinstance(val, Container):
+                self.__getattribute__(key).to_device(device)
+            elif isinstance(val, torch.Tensor):
+                self.__setattr__(key, self.__getattribute__(key).to(device))
