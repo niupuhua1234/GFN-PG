@@ -1,6 +1,6 @@
 # Technical Comparison and Originality/Attribution Concern
 
-This document preserves a public technical comparison concerning the relationship between our prior works, *GFlowNet Training by Policy Gradients* (GFN-PG) and *GFlowNet Policy Evaluation via Subtrajectory Balance* (Sub-EB), and the subsequent work *Proximal Policy Optimization for Amortized Discrete Sampling*.
+This document preserves a public technical comparison concerning the relationship between our prior works, *GFlowNet Training by Policy Gradients* (GFN-PG) and *Evaluating GFlowNet from partial episodes for stable and flexible policy-based training* (Sub-EB), and the subsequent work *Proximal Policy Optimization for Amortized Discrete Sampling*.
 
 The comparison below is based solely on publicly available versions of the respective works. The original public record is available on OpenReview:
 
@@ -12,13 +12,17 @@ This GitHub document serves as a persistent mirror of that technical record. Sub
 
 ## 1. Public chronology
 
-Our work *GFlowNet Training by Policy Gradients* was submitted to ICLR 2024 on **September 23, 2023**, made publicly available on OpenReview on **October 13, 2023**, and subsequently accepted at **ICML 2024**.
+This OpenReview page records the earliest publicly available version of [1] (*GFlowNet Training by Policy Gradients*, GFN-PG), made public on October 13, 2023. [1] was subsequently accepted at ICML 2024, and [2] (*Evaluating GFlowNet from partial episodes for stable and flexible policy-based training*, Sub-EB) appeared at ICLR 2026. This comment documents the technical relationship between our works [1,2] and the paper [9] (*Proximal Policy Optimization for Amortized Discrete Sampling*). The comparison is based solely on publicly available versions of these papers.
 
-Our later related work, *GFlowNet Policy Evaluation via Subtrajectory Balance* (Sub-EB), appeared at **ICLR 2026**.
+As detailed below, the issues we identify go substantially beyond ordinary overlap in topic or an incomplete related-work discussion.
 
-The later paper *Proximal Policy Optimization for Amortized Discrete Sampling* was made public after these works.
+* The value and advantage formulation, the Soft-RL interpretation, the policy-optimization objective, the performance-difference result, and the performance-bound derivation presented in [9] all have direct or closely related counterparts in [1,2]. Most importantly, the central Ent-PPO objective can be obtained directly by applying the standard PPO approximation in [6] to the Soft-TRPO objective introduced in [1], while key supporting theoretical results either coincide with or closely follow results already established in [1].
 
-This chronology is relevant because several conceptual, methodological, and theoretical components presented in the later paper have direct or closely related counterparts in the earlier works.
+* Nevertheless, [9] presents several of these elements as its own conceptual, methodological, and theoretical contributions without
+clearly distinguishing the previously established results from its genuinely new contributions. 
+
+We therefore consider this to be a serious originality and attribution problem, rather than merely a matter of missing citations.
+The detailed technical evidence supporting these statements is provided below.
 
 ---
 
@@ -277,11 +281,3 @@ PMLR, 2017.
 [9] Anna Zykova-Myzina, Timofei Gritsaev, Daniil Tiapkin, Nikita Morozov.  Proximal Policy Optimization for Amortized Discrete Sampling,   ICML 2026 Workshop on Structured Probabilistic Inference & Generative Modeling.
 
 [10] Daniil Tiapkin, Morozov Nikita, Naumov Alexey, and Vetrov P Dmitry. Generative flow networks as entropy-regularized rl. In International Conference on Artificial Intelligence and Statistics. PMLR, 2024.
-
-**[4]** John Schulman et al.  
-*Proximal Policy Optimization Algorithms.*  
-arXiv:1707.06347.
-
-**[5]** John Schulman et al.  
-*Trust Region Policy Optimization.*  
-International Conference on Machine Learning (ICML), 2015.
