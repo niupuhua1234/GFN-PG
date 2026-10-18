@@ -84,8 +84,8 @@ PMLR, 2017.
 
 
 Taken together, these observations reveal an internal inconsistency in the stated motivation of [9]: the criterion used to label prior policy-based methods as non-stationary also applies to value-based formulations that [9] treats as stationary or stable.
----
 
+------------------
 
 (b) **Second, one core contribution claimed by [9] is to reinterpret policy-based GFlowNet methods from the perspective of soft RL. However, the relationship between GFlowNets and soft RL, including Soft-Q Learning  (SQL) [4] and Soft Actor-Critic (SAC) [5], has already been clarified in [2,3]**.  To be specific,
 
