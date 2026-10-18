@@ -1,5 +1,3 @@
-# Technical Comparison and Originality/Attribution Concern
-
 This document preserves a public technical comparison concerning the relationship between our prior works, *GFlowNet Training by Policy Gradients* (GFN-PG) and *Evaluating GFlowNet from partial episodes for stable and flexible policy-based training* (Sub-EB), and the subsequent work *Proximal Policy Optimization for Amortized Discrete Sampling*.
 
 The comparison below is based solely on publicly available versions of the respective works. The original public record is available on OpenReview:
@@ -10,7 +8,8 @@ This GitHub document serves as a persistent mirror of that technical record. Sub
 
 ---
 
-## 1. Public chronology
+## 1. Technical Comparison and Originality/Attribution Concern
+
 
 This OpenReview page records the earliest publicly available version of [1] (*GFlowNet Training by Policy Gradients*, GFN-PG), made public on October 13, 2023. [1] was subsequently accepted at ICML 2024, and [2] (*Evaluating GFlowNet from partial episodes for stable and flexible policy-based training*, Sub-EB) appeared at ICLR 2026. This comment documents the technical relationship between our works [1,2] and the paper [9] (*Proximal Policy Optimization for Amortized Discrete Sampling*). The comparison is based solely on publicly available versions of these papers.
 
@@ -24,241 +23,17 @@ clearly distinguishing the previously established results from its genuinely new
 We therefore consider this to be a serious originality and attribution problem, rather than merely a matter of missing citations.
 The detailed technical evidence supporting these statements is provided below.
 
----
 
-## 2. Summary of the concern
-
-The overlap goes substantially beyond a general similarity in topic or an incomplete related-work discussion.
-
-In particular, the later work contains direct or closely related counterparts to earlier results on:
-
-- the value and advantage formulation for policy-based GFlowNets;
-- the Soft-RL interpretation of GFlowNet learning;
-- the role of policy-dependent log-ratio rewards and the resulting non-stationarity discussion;
-- the relationship between policy-gradient objectives and standard GFlowNet objectives;
-- the relation between Sub-EB and Sub-TB style value learning;
-- the Soft-TRPO formulation for GFlowNets and its standard PPO approximation;
-- the finite-horizon performance-difference result; and
-- the corresponding performance-bound derivation.
-
-Most importantly, the central Ent-PPO objective in *Proximal Policy Optimization for Amortized Discrete Sampling* can be obtained directly by applying the standard PPO approximation to the Soft-TRPO objective introduced in *GFlowNet Training by Policy Gradients*, after aligning the sign and notation conventions.
-
-Based on the publicly documented equation- and theorem-level correspondences below, **we consider the presentation of previously established conceptual, methodological, and theoretical results as new contributions in the later work to constitute serious academic misconduct concerning originality and attribution, rather than merely a matter of missing citations or incomplete related-work discussion.**
+**Comparison Table**
+| Aspect | Our earlier work | Subsequent work | Technical relationship |
+|---|---|---|---|
+| **Value and advantage functions** | Our earlier policy-gradient formulation [1,2] defines the soft value function $V_F$ and advantage function $A_F$ for GFlowNet. | The subsequent work introduces value $V^\pi$ and advantage $A^\pi$. | In the GFlowNet setting, after aligning notation, $V^\pi=-V_F$ and $A^\pi=-A_F$. Besides, [9] use the same objectives, TD-$\lambda$ adopted in [1] or Sub-EB[2] for learning $V^\pi$. Yet [9] presents its formulation as avoiding a non-stationarity issue that it attributes to the earlier formulation in [1,2] |
+| **Soft-RL interpretation** | Our related work explicitly analyzes the connection between policy-based GFlowNet methods and Soft Actor-Critic (SAC) [5], and between value-based GFlowNet methods and Soft Q-learning (SQL) [4],  where SAC and SQL are the standard policy-based and value-based formulations of Soft RL, respectively. | [9] presents a Soft-RL interpretation as a central motivation and conceptual contribution of the work. | Building on the notation of [10], which is a SQL-style reformulation of the value-based Detailed Balance (DB) method, [9] presents an SAC-style formulation. Since the value function $V$, advantage function $A$, and value-learning objective are adopted from [1,2], the resulting SAC formulation is mathematically indentical to the formulation already established in [1,2]. Nevertheless, [9] presents this formulation as a contribution of the present work without properly acknowledging its prior establishment in [1,2].  |
+| **Trust-region policy objective** | [1] introduces a soft formulation of original TRPO [7]. | [9] proposes an Ent-PPO surrogate objective. | Applying the standard PPO approximation techniques in [6] to the Soft-TRPO objective in [1] yields the Ent-PPO objective in [9] directly. Nevertheless, Nevertheless, [9] presents Ent-PPO as a new methodological contribution without clearly acknowledging that its objective follows directly from the Soft-TRPO formulation in [1] through the standard PPO approximation. |
+| **Performance-Difference Equation** | Lemma C.2 of [1] (Lemma 5 of this ICLR version) provides a  Performance-Difference Lemma (PDL) that extend the original PDL for regular MDP (with invertiable transition matrix $P$) and fixed reward $r$ to absorbing MDP (singular $P$) and non-fixed rewards $r$ | Lemmas F.1 and F.2 of [9] are presented as performance-difference results for GFlowNets. | After aligning the corresponding notation and sign conventions, the expressions in [9] coincide with the earlier result in [1]. Therefore, [9] presents a result already established in [1] as a new contribution of the present work. |
+| **Performance bound** | Theorem 3.6 of [1] (Theorem 2 of this ICLR version) derives a performance bound, based on which the Soft-TRPO objective derived. | [9] presents Proposition F.5 as the corresponding performance bound for its Ent-PPO derivation. | The proof strategy closely parallels the earlier Soft-TRPO analysis and the standard TRPO performance-bound argument. The result in [9] appears to use a looser form of the bound, making the final expression look different while retaining essentially the same underlying derivational structure. |
 
 ---
-
-## 3. Value and advantage formulations
-
-The later paper defines a Soft-RL value function \(V^\pi\) and advantage function \(A^\pi\) for GFlowNet training.
-
-Our earlier GFN-PG work defines the corresponding forward value and advantage functions \(V_F\) and \(A_F\). After aligning the notation and sign convention used by the two papers, the quantities satisfy
-
-\[
-V^\pi = -V_F,
-\qquad
-A^\pi = -A_F.
-\]
-
-Thus, in the finite-horizon GFlowNet setting considered by both works, the difference is primarily one of notation and interpretation rather than a substantively new value/advantage construction.
-
-The later Sub-EB work also gives a trajectory-level ratio formulation that decomposes into the same type of per-step log-ratio quantities used in the Soft-RL representation.
-
----
-
-## 4. Policy-dependent rewards and the non-stationarity argument
-
-A central motivation in *Proximal Policy Optimization for Amortized Discrete Sampling* is that the policy-based GFlowNet formulation involves a policy-dependent reward of the form
-
-\[
-r(s,s') = \log \pi_B(s\mid s') - \log \pi_F(s'\mid s),
-\]
-
-or the equivalent sign convention, and that this creates a non-stationarity issue.
-
-However, existing GFlowNet methods already allow the backward policy \(\pi_B\) to change during training. In value-based formulations such as Sub-TB, changing \(\pi_B\) also changes the corresponding log-ratio reward.
-
-Therefore, if policy dependence of the per-step log-ratio is taken as sufficient to characterize the policy-based formulation as non-stationary, the same criterion would also have to be applied consistently to value-based GFlowNet formulations in which \(\pi_B\) is learned or updated.
-
-The later paper does not clearly explain why the claimed difficulty should be specific to the policy-based representation while analogous policy dependence is already present in established value-based GFlowNet formulations.
-
----
-
-## 5. Vanilla policy gradient reduces to established GFlowNet objectives
-
-In our earlier GFN-PG work, the vanilla policy-gradient update was shown to reduce to established GFlowNet training objectives under particular choices of the trace/credit-assignment parameter.
-
-In particular, the appendices show that the policy-gradient update reduces to:
-
-- a Trajectory Balance (TB)-type update at one endpoint; and
-- a Detailed Balance (DB)-type update at the other endpoint.
-
-This result directly connects policy-gradient GFlowNet training to previously established balance objectives.
-
-Consequently, a sharp conceptual distinction between a supposedly non-stationary policy-gradient formulation and stationary TB/DB-style formulations is difficult to maintain without reconciling these equivalences.
-
----
-
-## 6. Sub-EB and Sub-TB
-
-Our Sub-EB work introduces a value-learning objective based on subtrajectory evaluation.
-
-Its objective has essentially the same structural form as Sub-TB, while providing a policy-evaluation interpretation and enabling learning from partial episodes.
-
-This creates another inconsistency in the later paper's non-stationarity motivation: if Sub-TB is regarded as free of the claimed problem, it is unclear why the closely related Sub-EB formulation should inherit a fundamentally different non-stationarity issue solely because of its policy-evaluation interpretation.
-
----
-
-## 7. Soft-RL interpretation
-
-Our prior work explicitly connects policy-based GFlowNet learning to Soft Actor-Critic (SAC)-style policy evaluation and optimization, while relating value-based GFlowNet methods to Soft Q-learning.
-
-Accordingly, the Soft-RL interpretation in the later paper has direct precedent.
-
-Returning to the motivation of the later paper, given the established equivalence between SAC and policy-based GFlowNet methods under the corresponding per-step objectives for learning \(V^\pi\), the same non-stationarity argument would necessarily also apply to the SAC formulation.
-
-The later paper does not explain why the claimed problem should arise in the policy-based GFlowNet representation but disappear after rewriting the same mathematical formulation in the equivalent SAC representation.
-
----
-
-## 8. Ent-PPO follows directly from the earlier Soft-TRPO formulation
-
-The most direct methodological relationship concerns the later paper's central Ent-PPO objective.
-
-Our earlier GFN-PG work introduces a Soft-TRPO formulation for GFlowNet training. In simplified notation, the update has the form
-
-\[
-\min_{\theta}
-\;
-\mathbb{E}_{\tau\sim\pi_\theta}
-\left[
-\sum_t
-A_F^{\mathrm{old}}(s_t,s_{t+1})
-\right]
-\]
-
-subject to a trust-region constraint of the form
-
-\[
-D_{\mathrm{KL}}
-\!\left(
-\pi_\theta
-\;\|\;
-\pi_{\mathrm{old}}
-\right)
-< \delta .
-\]
-
-With the sign correspondence
-
-\[
-A_F^{\mathrm{old}}
-=
-- A^{\pi_{\mathrm{old}}},
-\]
-
-this is the same policy-optimization structure to which the standard PPO approximation is normally applied.
-
-Introducing the usual importance ratio
-
-\[
-\rho_t(\theta)
-=
-\frac{
-\pi_\theta(a_t\mid s_t)
-}{
-\pi_{\mathrm{old}}(a_t\mid s_t)
-},
-\]
-
-and replacing the trust-region update with the standard PPO clipped surrogate yields the familiar form
-
-\[
-\mathbb{E}
-\left[
-\min
-\left(
-\rho_t(\theta) A_t,
-\;
-\operatorname{clip}
-\bigl(
-\rho_t(\theta),
-1-\epsilon,
-1+\epsilon
-\bigr) A_t
-\right)
-\right],
-\]
-
-with the corresponding Soft-RL/GFlowNet advantage.
-
-Thus, **the Ent-PPO objective can be obtained directly by applying the standard PPO approximation to the earlier Soft-TRPO objective**.
-
-In our view, presenting this resulting objective as an independent methodological contribution without clearly identifying its derivational dependence on the earlier Soft-TRPO formulation materially misrepresents the provenance of the method.
-
----
-
-## 9. Performance-difference result
-
-The later paper presents finite-horizon performance-difference lemmas.
-
-Our earlier work already established the corresponding finite-horizon performance-difference relationship.
-
-Using the occupancy measure
-
-\[
-d^{\pi_\theta}
-=
-\frac{1}{T}
-\sum_{t=0}^{T-1}
-d_t^{\pi_\theta},
-\]
-
-and aligning the sign conventions for the advantage functions, the expressions coincide with the earlier result in the finite-horizon setting.
-
-Accordingly, these later lemmas reproduce a result already established in the prior work rather than constituting a new theoretical contribution.
-
-Presenting such results as new theory without clearly identifying the earlier counterpart creates a misleading impression of novelty.
-
----
-
-## 10. Performance-bound derivation
-
-The later paper also presents a performance bound whose derivational structure closely parallels the performance bound established in our earlier work.
-
-The main apparent difference is that the later result uses a looser bounding step, while following the same overall finite-horizon occupancy-mismatch and advantage-based argument.
-
-The later proof also attributes a finite-horizon occupancy-mismatch inequality to a standard TRPO lemma. However, the corresponding finite-horizon inequality is explicitly developed in the earlier GFN-PG analysis.
-
-This further strengthens the concern that the theoretical development in the later paper closely follows previously established results without adequately distinguishing the earlier derivation from the genuinely new content, if any.
-
----
-
-## 11. Overall assessment
-
-Taken together, the issues above go substantially beyond ordinary overlap in topic.
-
-The value and advantage formulation, the Soft-RL interpretation, the policy-optimization objective, the performance-difference result, and the performance-bound derivation presented in *Proximal Policy Optimization for Amortized Discrete Sampling* all have direct or closely related counterparts in our prior works.
-
-Most importantly, the central Ent-PPO objective follows directly from applying the standard PPO approximation to the Soft-TRPO objective introduced in *GFlowNet Training by Policy Gradients*.
-
-Nevertheless, the later work presents several of these elements as its own conceptual, methodological, and theoretical contributions without clearly distinguishing the previously established results from its genuinely new contributions.
-
-For these reasons, **we consider this a serious originality and attribution problem and, based on the publicly documented technical evidence, serious academic misconduct concerning originality and attribution rather than merely a citation or related-work issue.**
-
----
-
-## 12. Public record
-
-The detailed comparison was originally posted publicly on our ICLR OpenReview page:
-
-**[OpenReview technical comparison](https://openreview.net/forum?id=k2lkeCCfRK&noteId=R9ob5DJqcf)**
-
-This GitHub document is intended to preserve the same technical record in a repository controlled by the authors of the earlier work. Any substantive revision to this document is visible through the public Git commit history.
-
-All comparisons in this document are based solely on publicly available versions of the respective works.
-
----
-
 ## References
 
 [1] Niu, P., Wu, S., Fan, M., and Qian, X. (2024). GFlowNet training by policy gradients. In Proceedings of the 41st International Conference on Machine Learning, volume 235 of Proceedings of Machine Learning Research, pages 38344–38380. PMLR.
@@ -281,3 +56,66 @@ PMLR, 2017.
 [9] Anna Zykova-Myzina, Timofei Gritsaev, Daniil Tiapkin, Nikita Morozov.  Proximal Policy Optimization for Amortized Discrete Sampling,   ICML 2026 Workshop on Structured Probabilistic Inference & Generative Modeling.
 
 [10] Daniil Tiapkin, Morozov Nikita, Naumov Alexey, and Vetrov P Dmitry. Generative flow networks as entropy-regularized rl. In International Conference on Artificial Intelligence and Statistics. PMLR, 2024.
+
+---
+## 2. Comparision Details
+
+
+(a) **The four observations below show that the claimed distinctions by [9], regarding the choice of reward, its effect on the resulting value  $V^\pi$ and advantage $A^\pi$, and the policy gradient computed based on the two function, is primarily notational and interpretational, rather than a substantive methodological difference from [1,2].**
+
+1. For GFlowNets, the horizon is finite and  $\pi(s'|s)=\pi(a|s)$, and $r(s,a)=r(s,s')$  for $a=(s\rightarrow s')$ ( see the beginning of Section 2 in [9]). The authors set $\alpha=1$ and $\gamma=1$ (see the beginning of Section 4 in [9]).  The soft value and avantage functions in e.q. (1,3) of [9] are then become
+    \begin{equation}V^\pi(s):=E_\pi\left[\sum_{t=0}^{T-1}\log \pi_B(s_t|s_{t+1})-E_{s_{t+1}}[\log \pi(s_{t+1}|s_t)]\mid s_0=s\right]=E_\pi\left[\sum_{t=0}^{T-1}\log \pi_B(s_t|s_{t+1})-\log \pi(s_{t+1}|s_t))|s_0=s\right],\end{equation} 
+    \begin{equation}A^\pi(s,a):=\log \pi_B(s|s')+E_{p(\cdot|s,a)}[V^\pi(s')]-V^\pi(s)-\log \pi(s'|s)\end{equation}
+     where  $\log \pi_B(s|s')$ is interpreted as reward $r(s,s')$ in e.q. (8) of [9].  However,  the definitions are indentical to $-V_F$ and $-A_F$ in [1]. Here, 
+      \begin{equation} V_F(s):=E_\pi\left[\sum_{t=0}^{T-1}\log\frac{\pi(s_{t+1}|s_t)}{\pi_B(s_t|s_{t+1})}\mid s_0=s \right], \text{and } A_F(s,a):=\log\frac{\pi(s'|s)}{\pi_B(s|s')}+E_{p(\cdot|s,a)}[V_F(s')]-V_F(s))\end{equation} where $\log\frac{\pi(s'|s)}{\pi_B(s|s')}$ is intepreted as reward $r(s,s')$. 
+
+    * Actually, [2] does not specify a particular step-wise form of the value function. Instead, they defines the value function more broadly in terms of the trajectory-level ratio, 
+       \begin{equation}V^\pi(s):=E_\pi \left[\log\frac{P_B(\tau)}{P_F(\tau|s_0)}| s_0=s \right ]=E_\pi\left[\sum_{t=0}^{T-1}\log \frac{\pi_B(s_t|s_{t+1})}{\pi(s_{t+1}|s_t)} \right ]\end{equation} which can be equivalently decomposed as the summation of either of the reward forms discussed above.   
+      
+    * Consequently, the claimed non-stationarity distinction cannot be attributed to a different value or advantage formulation, and [9] does not establish why merely reinterpreting the same quantities through different notations removes the claimed issue.
+
+2.  As acknowledge by [9](  see the end of Section 2 in [9]), existing value-based methods like Sub-TB allow varing $\pi_B$  during training ( i.e.  learned jointly with $\pi_F$). This means that the Soft-RL [4,5] reward $r(s,s'):=\log \pi_B(s|s')$ varies during GFlowNet training. 
+
+    * Therefore, if $r(s,s')$ depending on the varing $\pi_F(s'|s)$ make prior policy-based methods [1,2] non-stationary,  should the same criticism also apply to all value-based method including DB, TB, and Sub-TB? In paritical, they are equivalent to Soft-Q[4] formulations with $r(s,s')=\log \pi_B(s|s')$ under the established equivalences in [3,10].
+
+3. According to Appendices B.5 and B.6 in [1], the Vanilla Policy-Gradient (VPG) for policy-updating reduces to TB or DB updates when the bias-variance control parameter $\lambda$ is set to $1$ or $0$, respectively.  If this is the case, are the authors also claiming that the well-known stationary methods,  TB, DB and Soft-Q [4] variant of DB [10], all suffer from the same non-stationarity issue?
+
+4. Besides,  [9] acknowledge that Sub-EB [2] objective used for value-function updating takes essentially the same form as Sub-TB (see words above e.q. (15) in [9] ). If Sub-TB is free from the claimed non-stationarity issues, then why would Sub-EB [2] suffer from such issues?
+
+
+Taken together, these observations reveal an internal inconsistency in the stated motivation of [9]: the criterion used to label prior policy-based methods as non-stationary also applies to value-based formulations that [9] treats as stationary or stable.
+---
+
+
+(b) **Second, one core contribution claimed by [9] is to reinterpret policy-based GFlowNet methods from the perspective of soft RL. However, the relationship between GFlowNets and soft RL, including Soft-Q Learning  (SQL) [4] and Soft Actor-Critic (SAC) [5], has already been clarified in [2,3]**.  To be specific,
+
+ 5. Appendix A.6 of [2] shows that policy-based methods for GFlowNet correspond to SAC[5].  [2,3] both shows value-based methods, including DB, TB, and Sub-TB, and the Soft-RL variants [10] correspond to SQL[4]. Therefore, the Soft-RL perspective presented in [9] does not constitute a new conceptual framework for policy-based GFlowNets. It falls directly within the Soft-RL analysis already established in [2,3], including the correspondence to SAC and Soft-Q learning.
+
+ 6. Given equivalence between SAC and policy-based GFlowNet under per-step objectives for learning $V^\pi$ [2],  the same non-stationarity argument in [9] would also apply to the SAC. [9] does not explain why the  problem should arise in the policy-based representation of [1,2] but disappear merely by rewriting the same mathematical formulation under different notation.
+
+------------------
+
+(c) **Thirdly,  the three observations below show that Ent-PPO can be derived directly by applying the standard PPO approximation techniques in [6] to the Soft-TRPO formulation for GFlowNets introduced in [1].  However, the paper does not explicitly acknowledge this connection, nor does it adequately credit the theoretical foundation of Soft-TRPO[1] on which Ent-PPO is built.**
+
+7.    The TRPO obejective for GFlowNet is[1] :
+      \begin{equation}\min_\theta  E_{\tau\sim \pi(\theta)}\left[\sum_t A_F^{old}(s_t,s_{t+1})\right], \\ \text{s.t.}  KL(\pi_\theta|\pi^{old})<\delta \end{equation}where  $A_F^{old}$ is the soft advantage function of $\pi^{old}$  and equal to $-A^{\pi_{old}}$. Following the standard PPO derivation in Section 2.2 of [6],  this contrained objective can be converted to a non-contrained objective:
+      \begin{equation}
+          \max_\theta  E_{\tau\sim \pi^{old}}\left[\sum_t  \rho_t (\theta)A^{\pi_{old}}(s_t,s_{t+1})- \beta KL(\pi_\theta|\pi^{old})\right ], \quad \rho_t(\theta)=\frac{  \pi_{\theta}(s_{t+1}| s_t) }{ \pi_{old}(s_{t+1}| s_t) }
+      \end{equation} which concide with equation (20) of [9].  Further using the Cliping tricks in Section 3 of [6],  arrive at the Ent-PPO objective in [9].
+
+8.  Lemma F.1 (Soft performance-difference lemma) and Lemma F.2 (Surrogate as state-distribution swap) in [9], specifized to finite-horizn and deterministic-transition setting already exisit in  Lemma C.2. in [1] (Lemma 5 of this ICLR version).  However, the relationship between these derivations is not mentioned.  Lemma F.2, presented as a reformulation of Lemma F.1, states that:
+     \begin{equation}
+J(\pi_\theta)-J(\pi_{old})=\sum_{t=0}^{T-1} E_{s_t\sim d_t^{\pi_\theta}}[\phi(\pi_\theta,s_t)],   \quad \phi(\pi_\theta,s)=E_{s'\sim \pi_\theta(\cdot|s)}[A^{\pi_{old}}(s,s')]-KL(\pi_\theta(\cdot|s)\|\pi_{old}(\cdot|s)),
+\end{equation} Using the same notation, Lemma C.2. in [1] states that  if   $KL(\pi_\theta(\cdot|s)\|\pi_{old}(\cdot|s))<\zeta $: \begin{equation}
+J(\pi_{old})-J(\pi_\theta)\leq T\cdot E_{s\sim d^{\pi_\theta},s'\sim \pi_\theta(\cdot|s)}[-A^{\pi_{old}}(s,s')]]+T \zeta.
+\end{equation}  Otherwise,  \begin{equation}
+J(\pi_{old})-J(\pi_\theta)=T\cdot E_{s\sim d^{\pi_\theta}, s'\sim \pi_\theta(\cdot|s)}[-A^{\pi_{old}}(s,s')]]+T\cdot E_{s\sim d^{\pi_\theta}}[KL(\pi_\theta(\cdot|s)\|\pi_{old}(\cdot|s))] .
+\end{equation} Since $d^{\pi_\theta}:=\frac{1}{T}\sum_t d_t^{\pi_\theta}$, the two expressions coincide after aligning the sign convention. Presenting these lemmas as part of the new theoretical development of [9] without identifying their direct predecessor in [1] creates a misleading impression of theoretical novelty.
+
+
+9. The proof of Proposition F.5 in [9] closely parallels that of Theorem 3.6 in [1]. The main difference is that Proposition F.5 employs a looser bound, which makes the final expression look different while retaining essentially the same underlying derivational structure. This does not appear to constitute a substantive theoretical distinction, particularly because Theorem 3.6 in [1] provides a tighter bound, which taking a similar form to the standard TRPO performance bounds[8].
+
+    There is also a error in the proof of Proposition F.5. [9] cites Lemma 3 of [7] as the “standard occupancy-mismatch inequality for finite-horizon MDPs,” but Lemma 3 of [7] does not state this result. The result actually required by this proof appears explicitly as Lemma B.5 of [1]. This makes the lack of attribution particularly consequential: the proof not only closely follows the Soft-TRPO derivation of [1], but also relies on a inequality explicitly established in [1] while citing a lemma that don't state the required result.
+
+**All comparisons above are based solely on publicly available versions of the respective works.**
+
