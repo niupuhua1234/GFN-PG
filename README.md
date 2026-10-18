@@ -52,5 +52,6 @@ Based on these publicly documented technical correspondences, we consider the pr
 
 The complete technical evidence and chronology, based solely on publicly available versions of the respective works, are documented in our public OpenReview comment:
 
-**[Detailed technical comparison on OpenReview](https://openreview.net/forum?id=k2lkeCCfRK&noteId=R9ob5DJqcf)**
+- **[Full technical comparison and evidence](TECHNICAL_COMPARISON.md)**
+- **[Original public record on OpenReview](https://openreview.net/forum?id=k2lkeCCfRK&noteId=R9ob5DJqcf)**
 
