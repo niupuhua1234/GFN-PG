@@ -257,19 +257,26 @@ All comparisons in this document are based solely on publicly available versions
 
 ## References
 
-**[1]** Puhua Niu, Shili Wu, Mingzhou Fan, and Xiaoning Qian.  
-*GFlowNet Training by Policy Gradients.*  
-International Conference on Machine Learning (ICML), 2024.  
-https://proceedings.mlr.press/v235/niu24c.html
+[1] Niu, P., Wu, S., Fan, M., and Qian, X. (2024). GFlowNet training by policy gradients. In Proceedings of the 41st International Conference on Machine Learning, volume 235 of Proceedings of Machine Learning Research, pages 38344–38380. PMLR.
 
-**[2]** Puhua Niu et al.  
-*GFlowNet Policy Evaluation via Subtrajectory Balance.*  
-ICLR 2026.
+[2] Niu, P., Wu, S., and Qian, X. (2026). Evaluating GFlownet from partial episodes for stable and flexible policy-based training. In The Fourteenth International Conference on Learning Representations.
 
-**[3]** Anna Zykova-Myzina, Timofei Gritsev, Daniil Tiapkin, and Nikita Morozov.  
-*Proximal Policy Optimization for Amortized Discrete Sampling.*  
-SPIGM @ ICML 2026.  
-https://openreview.net/forum?id=ODbzTJmgp3
+[3] Tristan, D., Padideh, N., Nikolay, M., Doina, P., and Yoshua, B. Discrete probabilistic inference as control in multi-path environments. In Uncertainty in Artificial Intelligence, pages 997–1021. PMLR, 2024.
+
+[4] Tuomas Haarnoja, Haoran Tang, Pieter Abbeel, and Sergey Levine. Reinforcement learning with deep energy-based policies. In International conference on machine learning, pp. 1352–1361.
+PMLR, 2017.
+
+[5] Tuomas Haarnoja, Aurick Zhou, Pieter Abbeel, and Sergey Levine. Soft actor-critic: Off-policy maximum entropy deep reinforcement learning with a stochastic actor. In International conference on machine learning, pp. 1861–1870. PMLR, 2018.
+
+[6] Schulman, J., Wolski, F., Dhariwal, P., Radford, A., and Klimov, O. (2017b). Proximal policy optimization algorithms. arXiv preprint arXiv:1707.06347.
+
+[7]  Schulman, J., Levine, S., Abbeel, P., Jordan, M., and Moritz, P. (2015a). Trust region policy optimization. In International Conference on Machine Learning, pages 1889–1897. PMLR.
+
+[8] Achiam, J., Held, D., Tamar, A., and Abbeel, P. Constrained policy optimization. In International conference on machine learning, pp. 22–31. PMLR, 2017.
+
+[9] Anna Zykova-Myzina, Timofei Gritsaev, Daniil Tiapkin, Nikita Morozov.  Proximal Policy Optimization for Amortized Discrete Sampling,   ICML 2026 Workshop on Structured Probabilistic Inference & Generative Modeling.
+
+[10] Daniil Tiapkin, Morozov Nikita, Naumov Alexey, and Vetrov P Dmitry. Generative flow networks as entropy-regularized rl. In International Conference on Artificial Intelligence and Statistics. PMLR, 2024.
 
 **[4]** John Schulman et al.  
 *Proximal Policy Optimization Algorithms.*  
