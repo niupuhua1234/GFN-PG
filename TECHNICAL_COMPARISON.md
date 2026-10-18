@@ -1,17 +1,12 @@
-This document preserves a public technical comparison concerning the relationship between our prior works, *GFlowNet Training by Policy Gradients* (GFN-PG) and *Evaluating GFlowNet from partial episodes for stable and flexible policy-based training* (Sub-EB), and the subsequent work *Proximal Policy Optimization for Amortized Discrete Sampling*.
-
-The comparison below is based solely on publicly available versions of the respective works. The original public record is available on OpenReview:
-
-**[Original OpenReview technical comparison](https://openreview.net/forum?id=k2lkeCCfRK&noteId=R9ob5DJqcf)**
-
-This GitHub document serves as a persistent mirror of that technical record. Substantive updates can be tracked through the Git commit history.
+This GitHub document serves as a persistent mirror of the **[Original OpenReview technical comparison](https://openreview.net/forum?id=k2lkeCCfRK&noteId=R9ob5DJqcf)**. Substantive updates can be tracked through the Git commit history.
 
 ---
 
 ## 1. Technical Comparison and Originality/Attribution Concern
 
 
-This OpenReview page records the earliest publicly available version of [1] (*GFlowNet Training by Policy Gradients*, GFN-PG), made public on October 13, 2023. [1] was subsequently accepted at ICML 2024, and [2] (*Evaluating GFlowNet from partial episodes for stable and flexible policy-based training*, Sub-EB) appeared at ICLR 2026. This comment documents the technical relationship between our works [1,2] and the paper [9] (*Proximal Policy Optimization for Amortized Discrete Sampling*). The comparison is based solely on publicly available versions of these papers.
+This OpenReview page records the earliest publicly available version of [1] ([GFlowNet training by policy gradients](https://openreview.net/forum?id=G1igwiBBUj), GFN-PG), made public on October 13, 2023. [1] was subsequently accepted at ICML 2024, and [2] ([Evaluating GFlownet from partial episodes for stable and flexible policy-based training](https://openreview.net/forum?id=kWM0etSpBG), Sub-EB) appeared at ICLR 2026. This comment documents the technical relationship between our works [1,2] and the paper [9] ([Proximal Policy Optimization for Amortized Discrete Sampling](https://openreview.net/forum?id=ODbzTJmgp3). The comparison is based solely on publicly available versions of these papers.
+
 
 As detailed below, the issues we identify go substantially beyond ordinary overlap in topic or an incomplete related-work discussion.
 
