@@ -24,6 +24,7 @@ pip install -r requirement.txt
 
 
 
+
 ## Citation
 
 If you find our code useful, please considering citing our paper in your publications. We provide a BibTeX entry below.
@@ -38,5 +39,9 @@ If you find our code useful, please considering citing our paper in your publica
   year={2024},
   organization={PMLR}
 }
+```
 
+## Technical chronology
+
+A public technical comparison concerning the relationship between GFlowNet Training by Policy Gradients and subsequent work " Proximal Policy Optimization for Amortized Discrete Sampling" is available [link](https://openreview.net/forum?id=k2lkeCCfRK&noteId=R9ob5DJqcf).
 
