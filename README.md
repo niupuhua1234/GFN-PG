@@ -43,5 +43,5 @@ If you find our code useful, please considering citing our paper in your publica
 
 ## Technical chronology
 
-A public technical comparison concerning the relationship between *GFlowNet Training by Policy Gradients* and subsequent work *Proximal Policy Optimization for Amortized Discrete Sampling* is available [link](https://openreview.net/forum?id=k2lkeCCfRK&noteId=R9ob5DJqcf).
+A public technical comparison concerning the relationship between Soft-TRPO, *GFlowNet Training by Policy Gradients* and subsequent work *Proximal Policy Optimization for Amortized Discrete Sampling* is available [link](https://openreview.net/forum?id=k2lkeCCfRK&noteId=R9ob5DJqcf).
 
