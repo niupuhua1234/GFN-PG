@@ -60,27 +60,29 @@ PMLR, 2017.
 ---
 ## 2. Comparision Details
 
-
 (a) **The four observations below show that the claimed distinctions by [9], regarding the choice of reward, its effect on the resulting value  $V^\pi$ and advantage $A^\pi$, and the policy gradient computed based on the two function, is primarily notational and interpretational, rather than a substantive methodological difference from [1,2].**
 
-1. For GFlowNets, the horizon is finite and  $\pi(s'|s)=\pi(a|s)$, and $r(s,a)=r(s,s')$  for $a=(s\rightarrow s')$ ( see the beginning of Section 2 in [9]). The authors set $\alpha=1$ and $\gamma=1$ (see the beginning of Section 4 in [9]).  The soft value and avantage functions in e.q. (1,3) of [9] are then become
-    \begin{equation}V^\pi(s):=E_\pi\left[\sum_{t=0}^{T-1}\log \pi_B(s_t|s_{t+1})-E_{s_{t+1}}[\log \pi(s_{t+1}|s_t)]\mid s_0=s\right]=E_\pi\left[\sum_{t=0}^{T-1}\log \pi_B(s_t|s_{t+1})-\log \pi(s_{t+1}|s_t))|s_0=s\right],\end{equation} 
-    \begin{equation}A^\pi(s,a):=\log \pi_B(s|s')+E_{p(\cdot|s,a)}[V^\pi(s')]-V^\pi(s)-\log \pi(s'|s)\end{equation}
-     where  $\log \pi_B(s|s')$ is interpreted as reward $r(s,s')$ in e.q. (8) of [9].  However,  the definitions are indentical to $-V_F$ and $-A_F$ in [1]. Here, 
-      \begin{equation} V_F(s):=E_\pi\left[\sum_{t=0}^{T-1}\log\frac{\pi(s_{t+1}|s_t)}{\pi_B(s_t|s_{t+1})}\mid s_0=s \right], \text{and } A_F(s,a):=\log\frac{\pi(s'|s)}{\pi_B(s|s')}+E_{p(\cdot|s,a)}[V_F(s')]-V_F(s))\end{equation} where $\log\frac{\pi(s'|s)}{\pi_B(s|s')}$ is intepreted as reward $r(s,s')$. 
+1. For GFlowNets, the horizon is finite and  $\pi(s'|s)=\pi(a|s)$, and $r(s,a)=r(s,s')$  for $a=(s\rightarrow s')$ ( see the beginning of Section 2 in [9]). The authors set $\alpha=1$ and $\gamma=1$ (see the beginning of Section 4 in [9]).  The soft value and avantage functions in e.q. (1,3) of [9] are then become $$V^\pi(s):=E_\pi\left[\sum_{t=0}^{T-1}\log \pi_B(s_t|s_{t+1})-E_{s_{t+1}}[\log \pi(s_{t+1}|s_t)]\mid s_0=s\right]=E_\pi\left[\sum_{t=0}^{T-1}\log \pi_B(s_t|s_{t+1})-\log \pi(s_{t+1}|s_t))|s_0=s\right],$$
+   $$A^\pi(s,a):=\log \pi_B(s|s')+E_{p(\cdot|s,a)}[V^\pi(s')]-V^\pi(s)-\log \pi(s'|s)$$
+   
+   where  $\log \pi_B(s|s')$ is interpreted as reward $r(s,s')$ in e.q. (8) of [9].  However,  the definitions are indentical to $-V_F$ and $-A_F$ in [1]. Here, $$V_F(s):=E_\pi\left[\sum_{t=0}^{T-1}\log\frac{\pi(s_{t+1}|s_t)}{\pi_B(s_t|s_{t+1})}\mid s_0=s \right], \text{and } A_F(s,a):=\log\frac{\pi(s'|s)}{\pi_B(s|s')}+E_{p(\cdot|s,a)}[V_F(s')]-V_F(s))$$
+
+   where $\log\frac{\pi(s'|s)}{\pi_B(s|s')}$ is intepreted as reward $r(s,s')$. 
 
     * Actually, [2] does not specify a particular step-wise form of the value function. Instead, they defines the value function more broadly in terms of the trajectory-level ratio, 
-       \begin{equation}V^\pi(s):=E_\pi \left[\log\frac{P_B(\tau)}{P_F(\tau|s_0)}| s_0=s \right ]=E_\pi\left[\sum_{t=0}^{T-1}\log \frac{\pi_B(s_t|s_{t+1})}{\pi(s_{t+1}|s_t)} \right ]\end{equation} which can be equivalently decomposed as the summation of either of the reward forms discussed above.   
+       $$V^\pi(s):=E_\pi \left[\log\frac{P_B(\tau)}{P_F(\tau|s_0)}| s_0=s \right ]=E_\pi\left[\sum_{t=0}^{T-1}\log \frac{\pi_B(s_t|s_{t+1})}{\pi(s_{t+1}|s_t)} \right ]$$
+      
+      which can be equivalently decomposed as the summation of either of the reward forms discussed above.   
       
     * Consequently, the claimed non-stationarity distinction cannot be attributed to a different value or advantage formulation, and [9] does not establish why merely reinterpreting the same quantities through different notations removes the claimed issue.
 
-2.  As acknowledge by [9](  see the end of Section 2 in [9]), existing value-based methods like Sub-TB allow varing $\pi_B$  during training ( i.e.  learned jointly with $\pi_F$). This means that the Soft-RL [4,5] reward $r(s,s'):=\log \pi_B(s|s')$ varies during GFlowNet training. 
+3.  As acknowledge by [9](  see the end of Section 2 in [9]), existing value-based methods like Sub-TB allow varing $\pi_B$  during training ( i.e.  learned jointly with $\pi_F$). This means that the Soft-RL [4,5] reward $r(s,s'):=\log \pi_B(s|s')$ varies during GFlowNet training. 
 
     * Therefore, if $r(s,s')$ depending on the varing $\pi_F(s'|s)$ make prior policy-based methods [1,2] non-stationary,  should the same criticism also apply to all value-based method including DB, TB, and Sub-TB? In paritical, they are equivalent to Soft-Q[4] formulations with $r(s,s')=\log \pi_B(s|s')$ under the established equivalences in [3,10].
 
-3. According to Appendices B.5 and B.6 in [1], the Vanilla Policy-Gradient (VPG) for policy-updating reduces to TB or DB updates when the bias-variance control parameter $\lambda$ is set to $1$ or $0$, respectively.  If this is the case, are the authors also claiming that the well-known stationary methods,  TB, DB and Soft-Q [4] variant of DB [10], all suffer from the same non-stationarity issue?
+4. According to Appendices B.5 and B.6 in [1], the Vanilla Policy-Gradient (VPG) for policy-updating reduces to TB or DB updates when the bias-variance control parameter $\lambda$ is set to $1$ or $0$, respectively.  If this is the case, are the authors also claiming that the well-known stationary methods,  TB, DB and Soft-Q [4] variant of DB [10], all suffer from the same non-stationarity issue?
 
-4. Besides,  [9] acknowledge that Sub-EB [2] objective used for value-function updating takes essentially the same form as Sub-TB (see words above e.q. (15) in [9] ). If Sub-TB is free from the claimed non-stationarity issues, then why would Sub-EB [2] suffer from such issues?
+5. Besides,  [9] acknowledge that Sub-EB [2] objective used for value-function updating takes essentially the same form as Sub-TB (see words above e.q. (15) in [9] ). If Sub-TB is free from the claimed non-stationarity issues, then why would Sub-EB [2] suffer from such issues?
 
 
 Taken together, these observations reveal an internal inconsistency in the stated motivation of [9]: the criterion used to label prior policy-based methods as non-stationary also applies to value-based formulations that [9] treats as stationary or stable.
@@ -98,22 +100,28 @@ Taken together, these observations reveal an internal inconsistency in the state
 (c) **Thirdly,  the three observations below show that Ent-PPO can be derived directly by applying the standard PPO approximation techniques in [6] to the Soft-TRPO formulation for GFlowNets introduced in [1].  However, the paper does not explicitly acknowledge this connection, nor does it adequately credit the theoretical foundation of Soft-TRPO[1] on which Ent-PPO is built.**
 
 7.    The TRPO obejective for GFlowNet is[1] :
-      \begin{equation}\min_\theta  E_{\tau\sim \pi(\theta)}\left[\sum_t A_F^{old}(s_t,s_{t+1})\right], \\ \text{s.t.}  KL(\pi_\theta|\pi^{old})<\delta \end{equation}where  $A_F^{old}$ is the soft advantage function of $\pi^{old}$  and equal to $-A^{\pi_{old}}$. Following the standard PPO derivation in Section 2.2 of [6],  this contrained objective can be converted to a non-contrained objective:
-      \begin{equation}
-          \max_\theta  E_{\tau\sim \pi^{old}}\left[\sum_t  \rho_t (\theta)A^{\pi_{old}}(s_t,s_{t+1})- \beta KL(\pi_\theta|\pi^{old})\right ], \quad \rho_t(\theta)=\frac{  \pi_{\theta}(s_{t+1}| s_t) }{ \pi_{old}(s_{t+1}| s_t) }
-      \end{equation} which concide with equation (20) of [9].  Further using the Cliping tricks in Section 3 of [6],  arrive at the Ent-PPO objective in [9].
+  
+      $$\min_\theta  E_{\tau\sim \pi(\theta)}\left[\sum_t A_F^{old}(s_t,s_{t+1})\right], \\ \text{s.t.}  KL(\pi_\theta|\pi^{old})<\delta $$
+  
+      where  $A_F^{old}$ is the soft advantage function of $\pi^{old}$  and equal to $-A^{\pi_{old}}$. Following the standard PPO derivation in Section 2.2 of [6],  this contrained objective can be converted to a non-contrained objective:
+      $$\max_\theta  E_{\tau\sim \pi^{old}}\left[\sum_t  \rho_t (\theta)A^{\pi_{old}}(s_t,s_{t+1})- \beta KL(\pi_\theta|\pi^{old})\right ], \quad \rho_t(\theta)=\frac{  \pi_{\theta}(s_{t+1}| s_t) }{ \pi_{old}(s_{t+1}| s_t) }
+      $$
+
+      which concide with equation (20) of [9].  Further using the Cliping tricks in Section 3 of [6],  arrive at the Ent-PPO objective in [9].
 
 8.  Lemma F.1 (Soft performance-difference lemma) and Lemma F.2 (Surrogate as state-distribution swap) in [9], specifized to finite-horizn and deterministic-transition setting already exisit in  Lemma C.2. in [1] (Lemma 5 of this ICLR version).  However, the relationship between these derivations is not mentioned.  Lemma F.2, presented as a reformulation of Lemma F.1, states that:
-     \begin{equation}
-J(\pi_\theta)-J(\pi_{old})=\sum_{t=0}^{T-1} E_{s_t\sim d_t^{\pi_\theta}}[\phi(\pi_\theta,s_t)],   \quad \phi(\pi_\theta,s)=E_{s'\sim \pi_\theta(\cdot|s)}[A^{\pi_{old}}(s,s')]-KL(\pi_\theta(\cdot|s)\|\pi_{old}(\cdot|s)),
-\end{equation} Using the same notation, Lemma C.2. in [1] states that  if   $KL(\pi_\theta(\cdot|s)\|\pi_{old}(\cdot|s))<\zeta $: \begin{equation}
-J(\pi_{old})-J(\pi_\theta)\leq T\cdot E_{s\sim d^{\pi_\theta},s'\sim \pi_\theta(\cdot|s)}[-A^{\pi_{old}}(s,s')]]+T \zeta.
-\end{equation}  Otherwise,  \begin{equation}
-J(\pi_{old})-J(\pi_\theta)=T\cdot E_{s\sim d^{\pi_\theta}, s'\sim \pi_\theta(\cdot|s)}[-A^{\pi_{old}}(s,s')]]+T\cdot E_{s\sim d^{\pi_\theta}}[KL(\pi_\theta(\cdot|s)\|\pi_{old}(\cdot|s))] .
-\end{equation} Since $d^{\pi_\theta}:=\frac{1}{T}\sum_t d_t^{\pi_\theta}$, the two expressions coincide after aligning the sign convention. Presenting these lemmas as part of the new theoretical development of [9] without identifying their direct predecessor in [1] creates a misleading impression of theoretical novelty.
+   
+     $$J(\pi_\theta)-J(\pi_{old})=\sum_{t=0}^{T-1} E_{s_t\sim d_t^{\pi_\theta}}[\phi(\pi_\theta,s_t)],   \quad \phi(\pi_\theta,s)=E_{s'\sim \pi_\theta(\cdot|s)}[A^{\pi_{old}}(s,s')]-KL(\pi_\theta(\cdot|s)\|\pi_{old}(\cdot|s)),$$
+
+     Using the same notation, Lemma C.2. in [1] states that  if   $KL(\pi_\theta(\cdot|s)\|\pi_{old}(\cdot|s))<\zeta $:
+
+     $$J(\pi_{old})-J(\pi_\theta)\leq T\cdot E_{s\sim d^{\pi_\theta},s'\sim \pi_\theta(\cdot|s)}[-A^{\pi_{old}}(s,s')]]+T \zeta.$$
+     Otherwise,  $$J(\pi_{old})-J(\pi_\theta)=T\cdot E_{s\sim d^{\pi_\theta}, s'\sim \pi_\theta(\cdot|s)}[-A^{\pi_{old}}(s,s')]]+T\cdot E_{s\sim d^{\pi_\theta}}[KL(\pi_\theta(\cdot|s)\|\pi_{old}(\cdot|s))].$$
+
+     Since $d^{\pi_\theta}:=\frac{1}{T}\sum_t d_t^{\pi_\theta}$, the two expressions coincide after aligning the sign convention. Presenting these lemmas as part of the new theoretical development of [9] without identifying their direct predecessor in [1] creates a misleading impression of theoretical novelty.
 
 
-9. The proof of Proposition F.5 in [9] closely parallels that of Theorem 3.6 in [1]. The main difference is that Proposition F.5 employs a looser bound, which makes the final expression look different while retaining essentially the same underlying derivational structure. This does not appear to constitute a substantive theoretical distinction, particularly because Theorem 3.6 in [1] provides a tighter bound, which taking a similar form to the standard TRPO performance bounds[8].
+10. The proof of Proposition F.5 in [9] closely parallels that of Theorem 3.6 in [1]. The main difference is that Proposition F.5 employs a looser bound, which makes the final expression look different while retaining essentially the same underlying derivational structure. This does not appear to constitute a substantive theoretical distinction, particularly because Theorem 3.6 in [1] provides a tighter bound, which taking a similar form to the standard TRPO performance bounds[8].
 
     There is also a error in the proof of Proposition F.5. [9] cites Lemma 3 of [7] as the “standard occupancy-mismatch inequality for finite-horizon MDPs,” but Lemma 3 of [7] does not state this result. The result actually required by this proof appears explicitly as Lemma B.5 of [1]. This makes the lack of attribution particularly consequential: the proof not only closely follows the Soft-TRPO derivation of [1], but also relies on a inequality explicitly established in [1] while citing a lemma that don't state the required result.
 
