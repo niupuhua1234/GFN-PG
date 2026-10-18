@@ -41,7 +41,16 @@ If you find our code useful, please considering citing our paper in your publica
 }
 ```
 
-## Technical chronology
 
-A public technical comparison concerning the relationship between *GFlowNet Training by Policy Gradients* (Soft-TRPO/-PPO),  and subsequent work *Proximal Policy Optimization for Amortized Discrete Sampling* (Ent-PPO) is available [link](https://openreview.net/forum?id=k2lkeCCfRK&noteId=R9ob5DJqcf).
+## Technical chronology and originality/attribution concern
+
+Our work, *GFlowNet Training by Policy Gradients*, was submitted to ICLR 2024 on September 23, 2023, made publicly available on OpenReview on October 13, 2023, and subsequently accepted at ICML 2024.
+
+A detailed public technical comparison documents the relationship between the Soft-TRPO formulation introduced in *GFlowNet Training by Policy Gradients*, its standard PPO approximation, and the Ent-PPO formulation presented in the subsequent work *Proximal Policy Optimization for Amortized Discrete Sampling*. The comparison also examines the corresponding value and advantage formulations, Soft-RL interpretation, performance-difference results, and performance-bound derivations at the equation and theorem level.
+
+Based on these publicly documented technical correspondences, we consider the originality and attribution issues in *Proximal Policy Optimization for Amortized Discrete Sampling* to constitute **serious academic misconduct concerning originality and attribution**, rather than merely a matter of missing citations or incomplete related-work discussion.
+
+The complete technical evidence and chronology, based solely on publicly available versions of the respective works, are documented in our public OpenReview comment:
+
+**[Detailed technical comparison on OpenReview](https://openreview.net/forum?id=k2lkeCCfRK&noteId=R9ob5DJqcf)**
 
