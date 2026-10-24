@@ -3,7 +3,6 @@
 
 This GitHub document serves as a persistent mirror of the **[Original OpenReview technical comparison](https://openreview.net/forum?id=k2lkeCCfRK&noteId=R9ob5DJqcf)**. Substantive updates can be tracked through the Git commit history.
 
----
 
 ## 1. Technical Comparison and Originality/Attribution Concern
 
