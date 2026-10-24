@@ -20,7 +20,7 @@ clearly distinguishing the previously established results from its genuinely new
 The detailed technical evidence supporting these statements is provided below.
 
 
-**Comparison Table**
+**Summary of Technical Correspondences**
 | Aspect | Our earlier work | Subsequent work | Technical relationship |
 |---|---|---|---|
 | **Value and advantage functions** | Our earlier policy-gradient formulation [1,2] defines the soft value function $V_F$ and advantage function $A_F$ for GFlowNet. | The subsequent work introduces value $V^\pi$ and advantage $A^\pi$. | In the GFlowNet setting, after aligning notation, $V^\pi=-V_F$ and $A^\pi=-A_F$. Besides, [9] use the same objectives, TD-$\lambda$ adopted in [1] or Sub-EB[2] for learning $V^\pi$. Yet [9] presents its formulation as avoiding a non-stationarity issue that it attributes to the earlier formulation in [1,2] |
