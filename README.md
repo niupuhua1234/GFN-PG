@@ -50,7 +50,7 @@ We have documented a detailed technical comparison between the Soft-TRPO formula
 
 Based on these publicly documented technical correspondences, we consider the presentation of previously established conceptual, methodological, and theoretical results as new contributions in *Proximal Policy Optimization for Amortized Discrete Sampling* to constitute **serious academic misconduct concerning originality and attribution**, rather than merely a matter of missing citations or incomplete related-work discussion.
 
-The complete technical evidence and chronology, based solely on publicly available versions of the respective works, are documented in our public OpenReview comment:
+The complete technical evidence and chronology, based solely on publicly available versions of the respective works, are documented in the following records:
 
 - **[Full technical comparison and evidence](TECHNICAL_COMPARISON.md)**
 - **[Original public record on OpenReview](https://openreview.net/forum?id=k2lkeCCfRK&noteId=R9ob5DJqcf)**
