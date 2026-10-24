@@ -1,5 +1,4 @@
-# Technical Comparison: GFlowNet Training by Policy Gradients (ICML 2024) and Proximal Policy Optimization for Amortized Discrete Sampling (2026)
-
+# Public Note on the Chronology and Technical Relationship Between GFN-PG (Soft-TRPO) and Ent-PPO
 
 This GitHub document serves as a persistent mirror of the **[Original OpenReview technical comparison](https://openreview.net/forum?id=k2lkeCCfRK&noteId=R9ob5DJqcf)**. Substantive updates can be tracked through the Git commit history.
 
