@@ -17,7 +17,7 @@ As detailed below, the issues we identify go substantially beyond ordinary overl
 * Nevertheless, [9] presents several of these elements as its own conceptual, methodological, and theoretical contributions without
 clearly distinguishing the previously established results from its genuinely new contributions. 
 
-We therefore consider this to be a serious originality and attribution problem, rather than merely a matter of missing citations.
+**We therefore consider this to be a serious originality and attribution problem, rather than merely a matter of missing citations.**
 The detailed technical evidence supporting these statements is provided below.
 
 
