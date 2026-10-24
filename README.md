@@ -42,11 +42,12 @@ If you find our code useful, please considering citing our paper in your publica
 ```
 
 
-## Technical chronology and originality/attribution concern
+## Originality/attribution concern
 
-Our work, *GFlowNet Training by Policy Gradients*, was submitted to ICLR 2024 on September 23, 2023, made publicly available on OpenReview on October 13, 2023, and subsequently accepted at ICML 2024.
+Our work, [*GFlowNet Training by Policy Gradients*](https://openreview.net/forum?id=G1igwiBBUj), was submitted to [ICLR 2024 on September 23, 2023](https://openreview.net/forum?id=k2lkeCCfRK&noteId=R9ob5DJqcf), made publicly available on OpenReview on October 13, 2023, and subsequently accepted at ICML 2024.
 
-We have documented a detailed technical comparison between the Soft-TRPO formulation introduced in *GFlowNet Training by Policy Gradients*(2024), and the Ent-PPO formulation presented in the subsequent work *Proximal Policy Optimization for Amortized Discrete Sampling*(2026). In particular, the comparison shows how the Ent-PPO objective can be derived by applying standard PPO approximation techniques to the earlier Soft-TRPO formulation.  The comparison also examines the corresponding value and advantage definitions, Soft-RL interpretation, derivations of performance-difference and performance-bound for policy optimization at the equation level.
+
+We have documented a detailed technical comparison between the Soft-TRPO formulation introduced in *GFlowNet Training by Policy Gradients*(2024), and the Ent-PPO formulation presented in the subsequent work [*Proximal Policy Optimization for Amortized Discrete Sampling*(2026)](https://openreview.net/forum?id=ODbzTJmgp3). In particular, the comparison shows how the Ent-PPO objective can be derived by applying standard PPO approximation techniques to the earlier Soft-TRPO formulation.  The comparison also examines the corresponding value and advantage definitions, Soft-RL interpretation, derivations of performance-difference and performance-bound for policy optimization at the equation level.
 
 Based on these publicly documented technical correspondences, we consider the presentation of previously established conceptual, methodological, and theoretical results as new contributions in *Proximal Policy Optimization for Amortized Discrete Sampling* to constitute **serious academic misconduct concerning originality and attribution**, rather than merely a matter of missing citations or incomplete related-work discussion.
 
