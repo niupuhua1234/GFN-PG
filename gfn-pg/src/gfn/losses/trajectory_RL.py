@@ -236,7 +236,7 @@ class TrajectoryRL(TrajectoryDecomposableLoss):
         pass
 
     @staticmethod
-    def kl_log_prob(log_prob_q, log_prob_p):
+    def kl_log_prob(log_prob_p, log_prob_q):
         log_prob_p = log_prob_p.detach()
         kl = (log_prob_p.exp() * (log_prob_p - log_prob_q)).sum(-1)
         return kl
