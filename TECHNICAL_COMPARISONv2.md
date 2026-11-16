@@ -73,3 +73,23 @@ This updated version briefly acknowledges this equivalence with one breif sentec
 
 
 4.  For Proposition 5, its proof use the occupancy-mismatch bound  ( Lemma B.5 of [1] ) for absorbing MDPs on finite-horizon DAGs. However, the authors refer to Achiam et al.’s Lemma 3 [8], which concerns discounted regular MDPs. The occupancy definitions and proof representations differ between the two results. **Therefore, the author fail to faithfully attribute contribution to prior works again**.
+
+# Reference 
+
+
+[1] Niu, P., Wu, S., Fan, M., and Qian, X. (2024). GFlowNet training by policy gradients. In Proceedings of the 41st International Conference on Machine Learning, volume 235 of Proceedings of Machine Learning Research, pages 38344–38380. PMLR.
+
+[2] Niu, P., Wu, S., and Qian, X. (2026). Evaluating GFlownet from partial episodes for stable and flexible policy-based training. In The Fourteenth International Conference on Learning Representations.
+
+[3] Tuomas Haarnoja, Aurick Zhou, Pieter Abbeel, and Sergey Levine. Soft actor-critic: Off-policy maximum entropy deep reinforcement learning with a stochastic actor. In International conference on machine learning, pp. 1861–1870. PMLR, 2018.
+
+[4] Tuomas Haarnoja, Haoran Tang, Pieter Abbeel, and Sergey Levine. Reinforcement learning with deep energy-based policies. In International conference on machine learning, pp. 1352–1361. PMLR, 2017.
+
+
+[5] Daniil Tiapkin, Morozov Nikita, Naumov Alexey, and Vetrov P Dmitry. Generative flow networks as entropy-regularized rl. In International Conference on Artificial Intelligence and Statistics. PMLR, 2024.
+
+[6] Schulman, J., Wolski, F., Dhariwal, P., Radford, A., and Klimov, O. (2017b). Proximal policy optimization algorithms. arXiv preprint arXiv:1707.06347.
+
+[7] Schulman, J., Levine, S., Abbeel, P., Jordan, M., and Moritz, P. (2015a). Trust region policy optimization. In International Conference on Machine Learning, pages 1889–1897. PMLR.
+
+[8] Achiam, J., Held, D., Tamar, A., and Abbeel, P. Constrained policy optimization. In International conference on machine learning, pp. 22–31. PMLR, 2017.
