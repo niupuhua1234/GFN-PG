@@ -17,8 +17,8 @@ This submission briefly acknowledges this equivalence with one breif sentece in 
 
    | | SAC-style actor–critic | Soft Q-learning (SQL) |
    |---|---|---|
-   | **What is optimized?** | Critic $\widehat V$ and actor $\pi$, using separate objectives | $\widehat Q$, or its parameterization $ \widehat Q=\widehat V+\log\pi$ |
-   | **Value-learning target** | The current policy’s value: $V^\pi(s)=\log F^\ast(s)-D_{KL}(P_\pi(\tau\mid s)\| P^\ast(\tau \mid s))$ | The optimal value: $Q^\ast(s,s')= \log F^\ast(s,s') $ or $\log F^\ast(s)+\log \pi^\ast(s'\mid s)$ |
+   | **What is optimized?** | Critic $\widehat V$ and actor $\pi$, using separate objectives | $\hat Q$, or its parameterization $\hat Q=\widehat V+\log\pi$ |
+   | **Value-learning target** | The current policy’s value: $V^\pi(s)=\log F^\ast(s)-D_{KL}(P_\pi(\tau\mid s)\| P^\ast(\tau \mid s))$ | The optimal value: $Q^\ast(s,s')=\log F^\ast(s,s')$ or $\log F^\ast(s)+\log \pi^\ast(s'\mid s)$ |
    | **Policy update** | Improve the actor using the critic | Derive the policy from the learned $Q$ |
    | **At the joint optimum** | $\widehat V=V^\ast=\log F^\ast$, $\pi=\pi^\ast$ | $\widehat Q=Q^\ast=V^\ast+\log\pi^\ast$ |
 
@@ -56,7 +56,7 @@ This submission briefly acknowledges this equivalence with one breif sentece in 
 
 * The claimed multi-epoch issues arise from the $\textcolor{red}{\mathrm{KL}(q\|p)(s)}$  of the soft-objective in submission, rather than in [1,7].  Here, $K$ update epochs correspond to $K$ actor gradient-updates on the rollout trajectory batch collected in one training iteration, with advantages held fixed throughout (Appendix D, Algorithm 2, lines 2–7, p. 23).
   
-   *  In particular, the earlier surrogate uses $\mathrm{KL}(p\|q)(s)=\mathbb E_{a\sim p}[\log p(a\mid s)-\log q(a\mid s)]$, which can be unbiasedly esitimated  by $ \widehat{KL}(p\|q)(s) =\frac{1}{|\mathcal B|}\sum_{(s,a) \in \mathcal B} \log p(a\mid s)-\log q(a\mid s)$, where $\mathcal B$ is the rollout batch sampled from $p$. The batch $\mathcal B$  remain valid throughout all $K$ updates, as $ \mathbb E [\widehat{KL}(p\|q)(s)]=\mathrm{KL}(p\|q)(s)$. Consequently, changing $q$ provides no basis for attributing a rollout-reuse problem to this KL term.
+   *  In particular, the earlier surrogate uses $\mathrm{KL}(p\|q)(s)=\mathbb E_{a\sim p}[\log p(a\mid s)-\log q(a\mid s)]$, which can be unbiasedly esitimated  by $\hat KL(p\|q)(s) =\frac{1}{|\mathcal B|}\sum_{(s,a) \in \mathcal B} \log p(a\mid s)-\log q(a\mid s)$, where $\mathcal B$ is the rollout batch sampled from $p$. The batch $\mathcal B$  remain valid throughout all $K$ updates, as $\mathbb E[\hat KL(p\|q)(s)]=\mathrm{KL}(p\|q)(s)$. Consequently, changing $q$ provides no basis for attributing a rollout-reuse problem to this KL term.
 
    *   The submission instead uses $\textcolor{red}{\mathrm{KL}(q\|p)(s)}$. An unweighted average over actions from the original rollout batch would not correctly estimate this quantity once $q\neq p$. This direction requires analytical computation, importance weighting, or samples from the updated $q$. The authors use analytical computation, and it does not establish a deficiency in the earlier formulation, whose KL term can already be estimated directly from reused rollout samples.
 
