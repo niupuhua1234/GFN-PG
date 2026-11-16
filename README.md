@@ -42,7 +42,7 @@ If you find our code useful, please considering citing our paper in your publica
 ```
 
 
-## Originality/attribution concern
+## Serious academic misconduct of [*Proximal Policy Optimization for Amortized Discrete Sampling*](https://openreview.net/forum?id=ODbzTJmgp3)
 
 Our work, [*GFlowNet Training by Policy Gradients*](https://arxiv.org/pdf/2408.05885), was submitted to [ICLR 2024](https://openreview.net/forum?id=k2lkeCCfRK&noteId=R9ob5DJqcf) on September 23, 2023, made publicly available on OpenReview on October 13, 2023, and subsequently accepted at [ICML 2024](https://openreview.net/forum?id=G1igwiBBUj).
 
