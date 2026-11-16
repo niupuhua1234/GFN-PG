@@ -4,14 +4,14 @@ We also note that the authors have released a revised version of Proximal Policy
 
 **1.** First of all,  this work follows the Soft Actor-Critic (SAC) framwork, where the $V^\pi$ and $\pi$ are paramterized and learned seperatedly.  The value function $V^\pi$ with it learning objectives, and  advantages function $A^\pi$ for updating  $\pi$ is the same as $V_F$ and $A_F$ used in [1,2]. However, in previous version,  the author claims that they give new Soft-RL (composed of SAC [3] and Soft Q-learning (SQL) [4] ) perspective  for GFlowNet, due to difference reward interpretation for defining $V$ and $A$.
  
-This submission briefly acknowledges this equivalence with one breif sentece in "Related work p.4". Nevertheless, the main text  focus on foregrounding a connection to the SQL representation in [5,4], based on the shared reward interpretation, and **continues to emphasize a reward interpretation contrast with the earlier SAC-style formulation in [1]. Yet the proposed methodology and implementation follow the same soft actor–critic structure, with PPO used for the actor update.** This framing continues to leave readers with an overstated impression of conceptual separation from the earlier formulations in [1,2].
+This updated version briefly acknowledges this equivalence with one breif sentece in "Related work p.4". Nevertheless, the main text  focus on foregrounding a connection to the SQL representation in [5,4], based on the shared reward interpretation, and **continues to emphasize a reward interpretation contrast with the earlier SAC-style formulation in [1]. Yet the proposed methodology and implementation follow the same soft actor–critic structure, with PPO used for the actor update.** This framing continues to leave readers with an overstated impression of conceptual separation from the earlier formulations in [1,2].
 
-*  The actually acknowledgment, about the equivalence of the value function and its learning objective to [1,2], is placed in Appendix G, at the end of the submission, and never explicitlymentioned/referred/dicussed in the main text. This selective presentation obscures the extent of the methodological overlap and creates a misleading impression of conceptual novelty.
+*  The actually acknowledgment, about the equivalence of the value function and its learning objective to [1,2], is placed in Appendix G, at the end of the updated version, and never explicitlymentioned/referred/dicussed in the main text. This selective presentation obscures the extent of the methodological overlap and creates a misleading impression of conceptual novelty.
 
 *  In contrast, a substantial portion of the main text is devoted to presenting and explaining the consequences of the following formulation, 
    $V^\pi(s):=E_\pi\left[\sum_{t=0}^{T-1}\log \pi_B(s_t|s_{t+1})-E_{s_{t+1}}[\log \pi(s_{t+1}|s_t)]\mid s_0=s\right]=E_\pi\left[\sum_{t=0}^{T-1}\log \frac{\pi_B(s_t|s_{t+1})}{\pi(s_{t+1}|s_t))}|s_0=s\right]$,By interpreting $\log\pi_B(s\mid s')$ as the intermediate reward $r(s,s')$ and writing the entropy $H(s_t)=E_{s_{t+1}}[\log \pi(s_{t+1}|s_t)]$ explicitly, the authors suggest methodological consequences different from those associated with the corresponding equivalent formulation in [1,2].
 
-* By continuing to emphasize the above reward interpretation, the authors aims at redirecting readers’ attention from the method’s SAC structure to the SQL structure in [4,5] (a another parallel Soft-RL branch), which also interprets $\log\pi_B$ as the intermediate reward.  With substantial main-text discussion devoted to foregrounding this connection, while the fuller correspondence with [1,2,3] is deferred to Appendix G, the submission sidesteps a detailed comparison with the most directly relevant earlier formulations.
+* By continuing to emphasize the above reward interpretation, the authors aims at redirecting readers’ attention from the method’s SAC structure to the SQL structure in [4,5] (a another parallel Soft-RL branch), which also interprets $\log\pi_B$ as the intermediate reward.  With substantial main-text discussion devoted to foregrounding this connection, while the fuller correspondence with [1,2,3] is deferred to Appendix G, the updated version sidesteps a detailed comparison with the most directly relevant earlier formulations.
 
    To be specific, 
 
@@ -22,7 +22,7 @@ This submission briefly acknowledges this equivalence with one breif sentece in 
    | **Policy update** | Improve the actor using the critic | Derive the policy from the learned $Q$ |
    | **At the joint optimum** | $\widehat V=V^\ast=\log F^\ast$, $\pi=\pi^\ast$ | $\widehat Q=Q^\ast=V^\ast+\log\pi^\ast$ |
 
-  Table 1 of this submission shows the shared optimal quantities, but does not explain this difference in learning targets. The submission trains a separate critic to estimate $V^\pi$ and uses it to improve the actor. This follows the actor–critic structure in [1,2,3], with PPO  [6] supplying the actor update. The shared optimal-value correspondence therefore does not establish a distinct conceptual framework.
+  Table 1 of this updated version shows the shared optimal quantities, but does not explain this difference in learning targets. The updated version trains a separate critic to estimate $V^\pi$ and uses it to improve the actor. This follows the actor–critic structure in [1,2,3], with PPO  [6] supplying the actor update. The shared optimal-value correspondence therefore does not establish a distinct conceptual framework.
 
 
 **2.**  As motivations of their work, the authors introduce two related concerns about an allegedly omitted entropy correction and multi-epoch updates:
@@ -40,7 +40,7 @@ This submission briefly acknowledges this equivalence with one breif sentece in 
 
 * Let $p=\pi_{\mathrm{old}}$ and $q=\pi_\theta$, 
 
-  | Quantity | Earlier formulation in [1,2] | Correspondence in this submission |
+  | Quantity | Earlier formulation in [1,2] | Correspondence in this updated version |
   |---|---|---|
   | **Policy value** | $V_F^p(s)$ | $V^{\pi_o}(s)=-V_F^p(s)$ |
   | **Advantage** |  $A_F^p(s,a)$ | $A^p(s,a)=-A_F^p(s,a)$ |
@@ -50,22 +50,22 @@ This submission briefly acknowledges this equivalence with one breif sentece in 
 
  * The corresponding formations in vanilla TRPO [7,8], take the same forms as the first column above,  only differing at the intermediate reward is policy-independent.  Therefore, the author  not only attributes the two issues with Soft-TRPO [1], but also the vanilla TRPO [7,8].
 
-   Accoding to the table, both [1,7,8] and this submission use fixed rollout advantages $A^p$, the rollout-policy state distribution induced by $p$, and explicit unit-KL regularization.  Therefore, the omiited correction claimed by this submission is unreasonable.
+   Accoding to the table, both [1,7,8] and this updated version use fixed rollout advantages $A^p$, the rollout-policy state distribution induced by $p$, and explicit unit-KL regularization.  Therefore, the omiited correction claimed by this updated version is unreasonable.
 
 
 
-* The claimed multi-epoch issues arise from the $\textcolor{red}{\mathrm{KL}(q\|p)(s)}$  of the soft-objective in submission, rather than in [1,7].  Here, $K$ update epochs correspond to $K$ actor gradient-updates on the rollout trajectory batch collected in one training iteration, with advantages held fixed throughout (Appendix D, Algorithm 2, lines 2–7, p. 23).
+* The claimed multi-epoch issues arise from the $\textcolor{red}{\mathrm{KL}(q\|p)(s)}$  of the soft-objective in updated version, rather than in [1,7].  Here, $K$ update epochs correspond to $K$ actor gradient-updates on the rollout trajectory batch collected in one training iteration, with advantages held fixed throughout (Appendix D, Algorithm 2, lines 2–7, p. 23).
   
    *  In particular, the earlier surrogate uses $\mathrm{KL}(p\|q)(s)=\mathbb E_{a\sim p}[\log p(a\mid s)-\log q(a\mid s)]$, which can be unbiasedly esitimated  by $\hat KL(p\|q)(s) =\frac{1}{|\mathcal B|}\sum_{(s,a) \in \mathcal B} \log p(a\mid s)-\log q(a\mid s)$, where $\mathcal B$ is the rollout batch sampled from $p$. The batch $\mathcal B$  remain valid throughout all $K$ updates, as $\mathbb E[\hat KL(p\|q)(s)]=\mathrm{KL}(p\|q)(s)$. Consequently, changing $q$ provides no basis for attributing a rollout-reuse problem to this KL term.
 
-   *   The submission instead uses $\textcolor{red}{\mathrm{KL}(q\|p)(s)}$. An unweighted average over actions from the original rollout batch would not correctly estimate this quantity once $q\neq p$. This direction requires analytical computation, importance weighting, or samples from the updated $q$. The authors use analytical computation, and it does not establish a deficiency in the earlier formulation, whose KL term can already be estimated directly from reused rollout samples.
+   *   The updated version instead uses $\textcolor{red}{\mathrm{KL}(q\|p)(s)}$. An unweighted average over actions from the original rollout batch would not correctly estimate this quantity once $q\neq p$. This direction requires analytical computation, importance weighting, or samples from the updated $q$. The authors use analytical computation, and it does not establish a deficiency in the earlier formulation, whose KL term can already be estimated directly from reused rollout samples.
 
 
 3. For the soft performance-difference lemma (PDL), on which Ent-PPO is built, the authors previously stated:
 
    >  equivalent statements appear in Neu et al.  and Geist et al..
  
-   Now in this submission, the author states that  
+   Now in this updated version, the author states that  
 
      >  equivalent statements appear in Neu et al.  and Geist et al. , and in the GFlowNet setting it also appears in the proof of Lemma C.2 of Niu et al. .
     
