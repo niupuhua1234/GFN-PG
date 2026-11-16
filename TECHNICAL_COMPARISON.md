@@ -1,4 +1,4 @@
-# Public Note on the Chronology and Technical Relationship Between GFN-PG (Soft-TRPO) and Ent-PPO
+# Serious academic misconduct of [Proximal Policy Optimization for Amortized Discrete Sampling](https://openreview.net/forum?id=ODbzTJmgp3)
 
 This GitHub document serves as a persistent mirror of the **[Original OpenReview technical comparison](https://openreview.net/forum?id=k2lkeCCfRK&noteId=R9ob5DJqcf)**. Substantive updates can be tracked through the Git commit history.
 
