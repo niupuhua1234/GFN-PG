@@ -46,7 +46,7 @@ This updated version briefly acknowledges this equivalence with one breif sentec
   | **Advantage** |  $A_F^p(s,a)$ | $A^p(s,a)=-A_F^p(s,a)$ |
   | **Exact performance difference** |  Lemma C.2: $J_F(q)-J_F(p)= \sum_t \mathbb E_{s_t\sim d^q} \left[ \mathbb E_{a_t\sim q} A_F^p(s_t,a_t)+KL(q\|p)(s_t)\right]$ |  Eq. (24):  $J(q)-J(p)=\mathbb E_{\tau\sim q}\sum_t \left[A^p(s_t,a_t)-\mathrm{KL}(q\|p)(s_t)\right]$ $\quad\quad = \sum_t \mathbb E_{s_t\sim d^q} \left[ \mathbb E_{a_t\sim q} A^p(s_t,a_t)-\mathrm{KL}(q\|p)(s_t)\right]$ |
   | **Local Soft improvement** |  $-\mathbb E_q[A_F^p(s,a)]-\mathrm{KL}(q\|p)(s)$ | Eqs. (15)–(17): $\mathbb E_q[A^p(s,a)]-\mathrm{KL}(q\|p)(s)$ |
-  | **Practical soft objective choice** |  Unconstained soft-TRPO objective [1,8]:  $\mathbb E_{s\sim d^p}[-\mathbb E_{a\sim q}[A_F^p(s,a)]-\beta\mathrm{KL}(p\|q)(s)]$ | Eqs. (15)–(17):   $\mathbb E_{s\sim d^p}[-\mathbb E_{a\sim q}[A_F^p(s,a)]-\textcolor{red}{\mathrm{KL}(q\|p)(s)}]$ |
+  | **Practical soft objective choice** |  Unconstained soft-TRPO objective [1,8]:  $\mathbb E_{s\sim d^p}[-\mathbb E_{a\sim q}[A_F^p(s,a)]-\beta\mathrm{KL}(p\|q)(s)]$ | Eqs. (15)–(17):   $\mathbb E_{s\sim d^p}[-\mathbb E_{a\sim q}[A^p(s,a)]-\textcolor{red}{\mathrm{KL}(q\|p)(s)}]$ |
 
  * The corresponding formations in vanilla TRPO [7,8], take the same forms as the first column above,  only differing at the intermediate reward is policy-independent.  Therefore, the author  not only attributes the two issues with Soft-TRPO [1], but also the vanilla TRPO [7,8].
 
